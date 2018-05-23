@@ -1,0 +1,165 @@
+<!--
+/////////////////////////////////////////////////////////////////////////////
+// qcengine_editor.html
+// Copyright 2016 Eric Johnston, Machine Level
+// ej@machinelevel.com
+// e.johnston@bristol.ac.uk
+//
+//  License: (this page is free for commercial and non-commercial use.)
+//    (this is the zlib license, with item 4 added) 
+//
+//  This software is provided 'as-is', without any express or implied
+//  warranty. In no event will the authors be held liable for any damages
+//  arising from the use of this software.
+//
+//  Permission is granted to anyone to use this software for any purpose,
+//  including commercial applications, and to alter it and redistribute it
+//  freely, subject to the following restrictions:
+//
+//  1. The origin of this software must not be misrepresented; you must not
+//     claim that you wrote the original software. If you use this software
+//     in a product, an acknowledgment in the product documentation would be
+//     appreciated but is not required.
+//  2. Altered source versions must be plainly marked as such, and must not be
+//     misrepresented as being the original software.
+//  3. This notice may not be removed or altered from any source distribution.
+//  4. If you find this material useful, I'd love to know. If there is an email
+//     address listed above this notice, please consider sending me a note.
+//  (end of license text)
+//
+//  Commercial interest: There is a C++ version of qcengine which runs much faster
+//  and has SIMD/OpenCL/CUDA support. For more info, contact me at qcengine@machinelevel.com
+//
+-->
+<html>
+<head>
+<title>QCEngine</title>
+<link rel="icon" href="favicon.ico" />
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<!--
+<script type="text/javascript"  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type='text/x-mathjax-config'>
+  MathJax.Hub.Config({
+  TeX: {
+     Macros: {
+      NN: '{\\bf N}',
+      abs: ['\\left|{#1}\\right|',1],
+      bra: ['\\langle{#1}|',1],
+      ket: ['{|{#1}\\rangle}',1],
+      vev: ['{\\langle{#1}\\rangle}',1],
+      braket: ['\\langle{#1}|{#2}\\rangle',2]
+    }
+  }});
+</script>
+-->
+
+<style type="text/css" media="screen">
+    #editor {
+        position: relative;
+        overflow: auto;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+</style>
+
+
+</head>
+
+
+
+
+<body>
+    <script type="text/javascript" src="../qcengine_bitfield.js"></script>
+    <script type="text/javascript" src="../qcengine_reg.js"></script>
+    <script type="text/javascript" src="../qcengine_int.js"></script>
+    <script type="text/javascript" src="../qcengine_basicops.js"></script>
+    <script type="text/javascript" src="../qcengine_widgets.js"></script>
+    <script type="text/javascript" src="../qcengine_blockjob.js"></script>
+    <script type="text/javascript" src="../qcengine_staff.js"></script>
+    <script type="text/javascript" src="../qcpop_utils.js"></script>
+    <script type="text/javascript" src="../qcengine_setup.js"></script>
+    <script type="text/javascript" src="../qcengine_scriptpanel.js"></script>
+    <script type="text/javascript" src="../qcengine_panel.js"></script>
+    <script type="text/javascript" src="../qcengine_photonic.js"></script>
+    <script type="text/javascript" src="../qcengine_test.js"></script>
+    <script type="text/javascript" src="../qcengine_webgl_block.js"></script>
+    <script type="text/javascript" src="../qcengine_mbc.js"></script>
+    <script type="text/javascript" src="../qcengine_aaronson_chp.js"></script>
+    <script type="text/javascript" src="../libs/lz-string/libs/lz-string.min.js"></script>
+    <script type="text/javascript" src="../libs/lz-string/libs/base64-string.js"></script>
+    <script src="../ace/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <!--
+    <script type="text/javascript" src="http://www.hostmath.com/Math/MathJax.js?config=OK"></script>
+    -->
+
+    <script id="2d-vertex-shader" type="x-shader/x-vertex">
+    attribute vec2 a_position;
+
+    void main() {
+      gl_Position = vec4(a_position, 0, 1);
+    }
+    </script>
+
+    <script id="2d-fragment-shader" type="x-shader/x-fragment">
+    void main() {
+      gl_FragColor = vec4(0,1,0,1);  // green
+    }
+    </script>
+    <script type="text/javascript" src="../qcengine_webgl_block.js"></script>
+
+
+
+<div id="editor">
+qc.reset(4);
+qc.write(3);
+qc.hadamard(1);
+qc.cnot(4, 1|2);
+qc.print('ok.');
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+var editor = ace.edit("editor");
+//editor.setTheme("ace/theme/twilight");
+editor.getSession().setMode("ace/mode/javascript");
+editor.commands.addCommand({
+    name: "run",
+    bindKey: {win: "Shift-Enter", mac: "Shift-Enter"},
+    exec: function(editor) {
+        parent.run_sample_ui('editor', 'output0.0');
+    }
+});
+if (parent && parent.set_editor)
+    parent.set_editor(editor);
+</script>
+
+
+
+</body>
+</html>
