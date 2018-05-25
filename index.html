@@ -1,94 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<!--
-/////////////////////////////////////////////////////////////////////////////
-// qcengine_workbench.html
-// Copyright 2016 Eric Johnston, Machine Level
-// ej@machinelevel.com
-// e.johnston@bristol.ac.uk
-//
-//  License: (this page is free for commercial and non-commercial use.)
-//    (this is the zlib license, with item 4 added) 
-//
-//  This software is provided 'as-is', without any express or implied
-//  warranty. In no event will the authors be held liable for any damages
-//  arising from the use of this software.
-//
-//  Permission is granted to anyone to use this software for any purpose,
-//  including commercial applications, and to alter it and redistribute it
-//  freely, subject to the following restrictions:
-//
-//  1. The origin of this software must not be misrepresented; you must not
-//     claim that you wrote the original software. If you use this software
-//     in a product, an acknowledgment in the product documentation would be
-//     appreciated but is not required.
-//  2. Altered source versions must be plainly marked as such, and must not be
-//     misrepresented as being the original software.
-//  3. This notice may not be removed or altered from any source distribution.
-//  4. If you find this material useful, I'd love to know. If there is an email
-//     address listed above this notice, please consider sending me a note.
-//  (end of license text)
-//
-//  Commercial interest: There is a C++ version of qcengine which runs much faster
-//  and has SIMD/OpenCL/CUDA support. For more info, contact me at qcengine@machinelevel.com
-//
--->
-<title>Secret Book Project</title>
-<link rel="icon" href="favicon.ico" />
-
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<!--
-<script type="text/javascript"  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<script type='text/x-mathjax-config'>
-  MathJax.Hub.Config({
-  TeX: {
-     Macros: {
-      NN: '{\\bf N}',
-      abs: ['\\left|{#1}\\right|',1],
-      bra: ['\\langle{#1}|',1],
-      ket: ['{|{#1}\\rangle}',1],
-      vev: ['{\\langle{#1}\\rangle}',1],
-      braket: ['\\langle{#1}|{#2}\\rangle',2]
-    }
-  }});
-</script>
--->
-
+<title>Book Samples</title>
 <style type="text/css" media="screen">
-    #editor {
-        position: relative;
-        overflow: auto;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 90%;
-        border: 1px solid #ddd;
-        z-index: 1;
-    }
-    #editor_frame {
+    #editor_div { 
+        position: absolute;
         display: block;
+        top: 32px;
+        right: 0;
+        bottom: 10px;
+        left: 0;
+    }
+    #controls_div { 
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 32px;
+    }
+    #editor_frame_div {
+        position: absolute;
+        display: block;
+        border: 1px solid;
+        padding: 0px; 
+        width: 45%;
+        top: 50px;
+        bottom: 20px;
         resize: both;
-        overflow: hidden;
-        width: 600;
-        height: 350;
-        border: 1px solid #aaa;
+        overflow: auto;
+        background-color: #ddd;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+
+    }
+    #script_output_textarea {
+        position: absolute;
+        display: block;
+        left:46%;
+        top:50px;
+        width:200px;
+        height:200px;
+    }
+    #btn_run {
+/*
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+*/
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 32px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bold;
     }
 </style>
-
-
 </head>
-
-
-
-
 <body>
 
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script> -->
+
+
+<!-- Editor info: https://ace.c9.io/#nav=embedding
+ -->
+<div id="editor_frame_div">
+    <div id="controls_div">
+        <input type="button" id="btn_run" value="Run Program" onclick="handle_run_button();">
+        <input id="chk_theme" type="checkbox" onchange="handle_checkboxes();">
+        <label for="chk_theme">Dark theme</label>
+        <span id="example_choice_span">
+            <select id="example_choice_sel">
+            </select>
+        </span>
+    </div>
+    <div id="editor_div">
+    </div>
+</div>
+<textarea id="script_output_textarea" style="resize:both;">
+(program output goes here)
+</textarea>
 
 
 
-<!-- EXAMPLES BELOW -->
+<script src="./external/ace/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>    
+    var editor = ace.edit("editor_div");
+// Add this for dark theme
+//    editor.setTheme("ace/theme/monokai");
+//    editor.setTheme("");
+    editor.session.setMode("ace/mode/javascript");
+
+var editor_div = document.getElementById('editor_div');
+var editor_frame_div = document.getElementById('editor_frame_div');
+var example_choice_span = document.getElementById('example_choice_span');
+var script_output_textarea = document.getElementById('script_output_textarea');
+
+
+function handle_run_button()
+{
+    run_script();
+}
+
+function handle_checkboxes()
+{
+    if (document.getElementById('chk_theme').checked)
+    {
+        editor.setTheme("ace/theme/monokai");
+        editor_frame_div.style.backgroundColor = '#444';
+        editor_frame_div.style.color = 'white';
+    }
+    else
+    {
+        editor.setTheme("");
+        editor_frame_div.style.backgroundColor = '#ddd';
+        editor_frame_div.style.color = 'black';
+    }
+
+}
+///////////////////////////////////////////////////////////////
+// This is a small workaround for the issue where the editor
+// doesn't get informed about size changes
+var last_editor_div_width = 0;
+var last_editor_div_height = 0;
+function check_for_editor_resize()
+{
+    var seconds_per_check_for_editor_resize = 0.5;
+    var w = editor_div.offsetWidth;
+    var h = editor_div.offsetHeight;
+    if (w != last_editor_div_width || h != last_editor_div_height)
+    {
+        editor.resize();
+        last_editor_div_width = w;
+        last_editor_div_height = h;
+    }
+    window.setTimeout(check_for_editor_resize,
+                      1000 * seconds_per_check_for_editor_resize);
+}
+window.onload = function() {
+    check_for_editor_resize();
+    make_sample_menu();
+};
+
+</script>
+
+
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+<script> 
+// This list contains an entry for each sample in this pager, aling with the
+// preferred display size of various elements.
+// menu_name - The name which will show up in the visible menu
+// id        - The name of the textarea which contains the program. Also the url key to load it directly
+// circle_scale - The number of circles wide/high in the desired default display.
+// gate_scale   - The number of gates wide/high in the desired default display.
+var sample_list = [
+    { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 38, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+];
+
+function make_sample_menu()
+{
+    str = '';
+    str += '<select id="example_choice_sel" onchange="example_menu_changed();">';
+    for (i = 0; i < sample_list.length; ++i)
+    {
+        sample = sample_list[i];
+        str += '<option value="' + sample.id + '">';
+        str += sample.menu_name;
+        str += '</option>';
+    }
+    str += '</select>';
+    example_choice_span.innerHTML = str;
+    example_menu_changed();
+}
+
+function example_menu_changed()
+{
+    menu = document.getElementById('example_choice_sel');
+    load_example(menu.value);
+}
+
+function load_example(id)
+{
+    for (i = 0; i < sample_list.length; ++i)
+    {
+        sample = sample_list[i];
+        if (sample.id == id)
+        {
+            source_area = document.getElementById(id);
+            if (source_area != null)
+            {
+                editor.focus();
+                editor.setValue(source_area.value);
+                editor.gotoLine(0);
+                setup_script_panels(sample);
+            }
+            return;
+        }
+    }
+}
+
+function LoadUserName() {}
+
+function setup_script_panels(sample)
+{
+    if (panel_staff)
+    {
+        qc_options.color_by_phase = false;
+        qc_options.circle_scale = 0.5;
+        qc.start();
+        qc.enableAnimation();
+        qc.reset(sample.num_qubits);
+        qc.write(0);
+        qint.new(sample.num_qubits, 'reg');
+        // qc.nop();
+        // qc.nop();
+        // qc.nop();
+
+        var left = 400;
+        var top = 250;
+        var gate_grid = 32;
+        var circle_grid = 64;
+        var gate_width = 80 + gate_grid * sample.num_instructions;
+        var gate_height = 50 + gate_grid * sample.num_qubits;
+        panel_staff.setPos(left, top);
+        panel_staff.setSize(gate_width, gate_height);
+        top += gate_height + 32;
+        var circle_width = 20 + circle_grid * sample.circles_per_row;
+        var circle_height = 150 + circle_grid * sample.circles_per_col;
+        panel_chart.setPos(left, top);
+        panel_chart.setSize(circle_width, circle_height);
+        panel_staff.setVisible(true);
+        panel_chart.setVisible(true);
+
+        panel_staff.draw();
+        panel_chart.draw();
+    }
+}
+
+function run_script()
+{
+    qc_options.color_by_phase = false;
+    qc_options.circle_scale = 0.5;
+    qc.start();
+    if (qc) {
+//      qc.disableAnimation();
+//      qc.enableRecording();
+      qc.codeLabel('');
+    }
+
+    qc.enableAnimation();
+
+    runQCScriptInTextArea('editor', 'script_output_textarea');
+
+    qc.qReg.changed();
+    panel_staff.draw();
+    panel_chart.draw();
+
+
+    if (0 && panel_staff)
+    {
+        left = 500;
+        top = 250;
+        panel_staff.setPos(left + 100, top + 32);
+        panel_chart.setPos(left + 600, top + 32);
+        panel_staff.setSize(500, 50);
+        panel_chart.setSize(500, 50);
+        panel_staff.setVisible(true);
+        panel_chart.setVisible(true);
+
+      if (0 && last_run_box != input_text_area)
+      {
+        var left = window.pageXOffset || document.documentElement.scrollLeft;      
+        var top  = window.pageYOffset || document.documentElement.scrollTop
+        panel_staff.setPos(left + 100, top + 32);
+        panel_chart.setPos(left + 600, top + 32);
+        last_run_box = input_text_area;
+      }
+
+//      panel_staff.setVisible(true);
+//      panel_staff.staff.fullSnapshot(); 
+
+//panel_staff.setPos(700, 500);
+//panel_staff.setSize(500, 50);
+//panel_staff.setVisible(true);
+
+//panel_chart.setPos(700, 600);
+//panel_chart.setSize(500, 144);
+//      panel_chart.setVisible(true);
+    }
+    qc.enableAnimation();
+}
+
+</script>
 
 <textarea id="grover1" style="display:none;">
 var number_to_flip = 3;
@@ -313,716 +529,25 @@ function estimate_num_spikes(spike, range)
 </textarea>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script type="text/javascript" src="../qcengine_bitfield.js"></script>
-    <script type="text/javascript" src="../qcengine_reg.js"></script>
-    <script type="text/javascript" src="../qcengine_int.js"></script>
-    <script type="text/javascript" src="../qcengine_basicops.js"></script>
-    <script type="text/javascript" src="../qcengine_widgets.js"></script>
-    <script type="text/javascript" src="../qcengine_blockjob.js"></script>
-    <script type="text/javascript" src="../qcengine_staff.js"></script>
-    <script type="text/javascript" src="../qcpop_utils.js"></script>
-    <script type="text/javascript" src="../qcengine_setup.js"></script>
-    <script type="text/javascript" src="../qcengine_scriptpanel.js"></script>
-    <script type="text/javascript" src="../qcengine_panel.js"></script>
-    <script type="text/javascript" src="../qcengine_photonic.js"></script>
-    <script type="text/javascript" src="../qcengine_test.js"></script>
-    <script type="text/javascript" src="../qcengine_webgl_block.js"></script>
-    <script type="text/javascript" src="../qcengine_mbc.js"></script>
-    <script type="text/javascript" src="../qcengine_aaronson_chp.js"></script>
-    <script type="text/javascript" src="../qcengine_ibm_hardware.js"></script>
-    <script type="text/javascript" src="../qcengine_ballistic.js"></script>
-
-<!--
-    <script type="text/javascript" src="../wasm/binaryen.js"></script>
-    <script type="text/javascript" src="../wasm/wasm.js"></script>
-    <script type="text/javascript" src="../qcengine_wasm.js"></script>
--->
-
-    <script type="text/javascript" src="../libs/lz-string/libs/lz-string.min.js"></script>
-    <script type="text/javascript" src="../libs/lz-string/libs/base64-string.js"></script>
-    <script src="../ace/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <!--
-    <script type="text/javascript" src="http://www.hostmath.com/Math/MathJax.js?config=OK"></script>
-    -->
-
-    <script id="2d-vertex-shader" type="x-shader/x-vertex">
-    attribute vec2 a_position;
-
-    void main() {
-      gl_Position = vec4(a_position, 0, 1);
-    }
-    </script>
-
-    <script id="2d-fragment-shader" type="x-shader/x-fragment">
-    void main() {
-      gl_FragColor = vec4(0,1,0,1);  // green
-    }
-    </script>
-    <script type="text/javascript" src="../qcengine_webgl_block.js"></script>
-
-
-
-
-
-
-
-  <table border="0">
-    <tr>
-      <td valign="top"><img src="./images/book_icon.png" height="90" onclick="if (panel_stopwatch)panel_stopwatch.toggleVisible();"></td>
-      <td valign="top">
-        <font face="Tahoma, Digital, Arial, Helvetica, sans-serif" size="3">
-        <h2>Secret Book Project #23 v1.4</h2>
-                  <font size="4">
-                    This is an active QC simulator, which provides a programming interface, <br/>
-                    as well as a programmer's visual model, for samples contained in a secret book <br/>we're working on.<br/>
-                  </font>
-                    <font size="1"><br/>
-                    &#169;2017 EJ+Mercedes+Nic, All rights reserved. 
-                    For more information, please send email to <a href="mailto:qc@machinelevel.com">qc@machinelevel.com</a>
-                    </font>
-          </font>
-      </td>
-    </tr>
-  </table>
-
-
-<br/>
-
-
-<font face="Tahoma, Digital, Arial, Helvetica, sans-serif" size="3">
-
-<h2>
-Welcome!
-</h2>
-You shuld be able to run the sample below.
-<br/>
-<br/>
-
-
-
-      <table><tr><td valign="top">
-      <br/>
-      <input id="button_run0.0" type="button" value="Run this" onclick="run_sample_ui('editor', 'output0.0');" />
-      <br/>
-      <br/>
-      Quick link
-      <br/>
-      <input id="genlink" type="text" size="7" value="" onclick="create_link_in_box(editor.getValue()); this.select();" />
-      <br/>
-      <br/>
-      Font size 
-      <input type="button" value="-" onclick="increase_editor_font_size(-2);" />
-      <input type="button" value="+" onclick="increase_editor_font_size(2);" />
-      </td>
-      <td valign="top">
-
-
-<div id="editor_frame" style="width:500px; height:800px; resize:both;">
-        <iframe src="qcengine_editor.html" scrolling="no" style="width:100%; height:95%;"></iframe>
-</div>
-      </td>
-      </td><td></td><td valign="top">
-<hr/>
-<textarea id="output0.0" style="display: none;" rows="5" cols="40">
-</textarea>
-
-
-<br/>
-
-<br/>
-
-<br/>
-<br/>
-
-
-
-
-
-
-
-
-<!-- ////////////////////////////////////////////////////////////////////// -->
-<br/>
-<br/>
-<br/>
-<!-- ////////////////////////////////////////////////////////////////////// -->
-
-
-
-
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<div id="loaded_program" style="display:none;"></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</font>
-
-
-<canvas id="webgl_canvas" width="256" height="256"></canvas>
-
-<script type="text/javascript">
-
-var last_run_box = null;
-
-var editor_fontsize = 12;
-function set_editor(ed)
-{
-  editor = ed;
-  increase_editor_font_size(0);
-  try_to_get_program_from_url();
-}
-
-function increase_editor_font_size(up_down)
-{
-  editor_fontsize += up_down;
-  if (editor_fontsize < 4)
-    editor_fontsize = 4;
-  editor.setOptions({fontSize: '' + editor_fontsize + 'pt'});
-}
-
-// get_url_param() is adapted from JeffreyCrofte's work here: https://www.creativejuiz.fr/blog/en/javascript-en/read-url-get-parameters-with-javascript
-function get_url_param(param) {
-  var vars = {};
-  window.location.href.replace( location.hash, '' ).replace( 
-    /[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
-    function( m, key, value ) { // callback
-      vars[key] = value !== undefined ? value : '';
-    }
-  );
-  if (param) {
-    return vars[param] ? vars[param] : null;  
-  }
-  return vars;
-}
-
-function do_ibm_convert()
-{
-  var span = document.getElementById('conversion_output');
-  var str = '';
-//  var asm = generate_ibm_qasm(qc.qReg.staff, false);
-  var asm_html = generate_ibm_qasm(qc.qReg.staff, true);
-
-  str += '<h3>Auto-generated QASM for IBM 5-bit QC</h3>';
-  str += '<i>If there are no errors, just copy it and paste it <a href="https://quantumexperience.ng.bluemix.net/qstage/#/editor/qasm" target="__blank"><b>here</b></a> to run it on actual hardware.</i>';
-  str += '<font size="2">';
-  str += asm_html;
-  str += '</font>';
-
-  if (span)
-    span.innerHTML = str;
-//  if (qc)
-//    qc.print(asm);
-}
-
-function create_link_in_box(content_str)
-{
-  var encoded_str = LZString.compressToEncodedURIComponent(content_str);
-  console.log("Original: length: " + content_str.length);
-  console.log("Encoded:: length: " + encoded_str.length);
-//  console.log(encoded_str);
-
-  var full_url = 'http://qc.machinelevel.com/oreilly/oreilly_workbench.html?program=';
-  full_url += encoded_str;
-  console.log(full_url);
-  var box = document.getElementById('genlink');
-  if (box)
-  {
-    var url_length_limit = 2000;
-    if (full_url.length <= url_length_limit)
-      box.value = full_url;
-    else
-      box.value = '(url too long)';
-  }
-}
-
-// This is adapted from http://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
-function save_code_to_disk(text)
-{
-    var filename = 'my_program.txt';
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-
-    if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        pom.dispatchEvent(event);
-    }
-    else {
-        pom.click();
-    }
-}
-
-function try_to_get_program_from_url()
-{
-//  console.log('>>>>>>>>>');
-  var program_id = get_url_param('p');
-  if (program_id)
-  {
-    div = document.getElementById(program_id);
-    if (div)
-      str = div.value;
-    console.log(str);
-    editor.setValue(str);
-    return;
-  }
-
-
-
-
-  var program = get_url_param('program');
-  if (program)
-  {
-//    console.log('1: "' + program + '"');
-    program = LZString.decompressFromEncodedURIComponent(program);
-    if (program)
-    {
-      editor.setValue(program, -1);
-//      console.log('2: "' + program + '"');
-    }
-  }
-//  console.log('<<<<<<<<<<');
-}
-
-
-function run_script(input_text_area, output_test_area)
-{
-    qc_options.color_by_phase = false;
-    qc_options.circle_scale = 0.5;
-    qc.start();
-    if (qc) {
-//      qc.disableAnimation();
-//      qc.enableRecording();
-      qc.codeLabel('');
-    }
-
-    runQCScriptInTextArea(input_text_area, output_test_area);
-
-
-    if (panel_staff)
-    {
-
-      if (last_run_box != input_text_area)
-      {
-        var left = window.pageXOffset || document.documentElement.scrollLeft;      
-        var top  = window.pageYOffset || document.documentElement.scrollTop
-        panel_staff.setPos(left + 100, top + 32);
-        panel_chart.setPos(left + 600, top + 32);
-        last_run_box = input_text_area;
-      }
-
-//      panel_staff.setVisible(true);
-//      panel_staff.staff.fullSnapshot(); 
-
-//panel_staff.setPos(700, 500);
-//panel_staff.setSize(500, 50);
-//panel_staff.setVisible(true);
-
-//panel_chart.setPos(700, 600);
-//panel_chart.setSize(500, 144);
-//      panel_chart.setVisible(true);
-    }
-    qc.enableAnimation();
-}
-
-
-
-function run_sample_ui(input_text_area, output_test_area)
-{
-  qc.start();
-  qc.enableAnimation();
-  qc.enableRecording();
-
-  var out_box = document.getElementById(output_test_area);
-  if (out_box)
-    out_box.style.display = 'block';
-  qc_options.speed_is_priority = false;
-  run_script(input_text_area, output_test_area);
-
-  panel_staff.setVisible(true);
-  panel_staff.staff.fullSnapshot(); 
-
-//  panel_chart.setSize(510, 300);
-  panel_chart.setVisible(true);
-}
-
-function run_sample_fast(input_text_area, output_test_area)
-{
-  qc.start();
-  if (!liquid)
-      liquid = new LiquidEmulator();
-  liquid.verbose = true;
-  qc.disableAnimation();
-  qc.disableRecording();
-  panel_staff.setVisible(false);
-  panel_chart.setVisible(false);
-
-  document.getElementById(output_test_area).style.display = 'block';
-  qc_options.speed_is_priority = true;
-  run_script(input_text_area, output_test_area);
-  qc_options.speed_is_priority = false;
-
-//  panel_staff.setVisible(true);
-//  panel_staff.staff.fullSnapshot(); 
-//  panel_chart.setSize(510, 300);
-//  panel_chart.setVisible(true);
-}
-
-function load_qc_program(program_file_path, textbox)
-{
-  program_file_path += '?random=' + Math.random();
-  $( '#loaded_program' ).load( program_file_path, function( response, status, xhr ) {
-    if ( status == "error" )
-    {
-      console.log('Error loading program ' + program_file_path +
-                  ': ' + xhr.status + ' ' + xhr.statusText);
-    }
-    else
-    {
-        var program_text = document.getElementById('loaded_program').innerHTML;
-        document.getElementById(textbox).innerHTML = program_text;
-//      document.getElementById(textbox).value = program_text;
-//      $('#'+textbox).val(program_text);
-    }
-  });
-}
-
-function bdone()
-{
-    panel_staff.draw();
-}
-
-function grover_iteration(x, condition)
-{
-  qc.codeLabel('Grover iteration');
-  x.hadamard();
-  x.not();
-  x.phaseShift(180, ~0, condition);
-  x.not();
-  x.hadamard();
-}
-
-function QFT(x)
-{
-  qc.codeLabel('QFT');
-  for (bit1 = 0; bit1 < x.numBits; ++bit1)
-  {
-    var mask1 = 1 << bit1;
-    var theta = 90.0;
-    x.hadamard(mask1);
-    for (bit2 = bit1 + 1; bit2 < x.numBits; ++bit2)
-    {
-      var mask2 = 1 << bit2;
-      x.phaseShift(theta, mask1 + mask2);
-      theta *= 0.5;
-    }
-  }
-}
-
-function invQFT(x)
-{
-  qc.codeLabel('inverse QFT');
-  for (var i = 0; i < x.numBits; ++i)
-  {
-    var bit1 = x.numBits - (i + 1);
-    var mask1 = 1 << bit1;
-    x.hadamard(mask1);
-    var theta = -90.0;
-    for (var j = i + 1; j < x.numBits; ++j)
-    {
-      var bit2 = x.numBits - (j + 1);
-      var mask2 = 1 << bit2;
-      x.phaseShift(theta, mask1 + mask2);
-      theta *= 0.5;
-    }
-  }
-}
-
-/*
-var worker = new Worker("../qcengine_worker.js");
-worker.onmessage = function(e)
-{
-  console.log('worker sent: '+e.data);
-};
-
-function startWorker()
-{
-    console.log('go');
-    console.log(worker);
-    worker.postMessage("start");
-}
-*/
-
-function setup_script_window(input_text_area, output_test_area, run_button)
-{
-  var obj = document.getElementById(input_text_area);
-  var btn = document.getElementById(run_button);
-  if (obj)
-  {
-    obj.onkeydown = function(e) {
-    if (e.keyCode == 13)
-    {
-        if (e.shiftKey === true && e.ctrlKey == true)
-        {
-            // ctrl-shift-enter is special, "run to cursor"
-            var instr = 0;
-            if (panel_staff && panel_staff.staff)
-              instr = panel_staff.staff.insertionStart;
-
-            if (btn)
-              btn.onclick();
-            else
-              run_script(input_text_area, output_test_area);
-
-            panel_staff.staff.rewind_insertion_to_start();
-            panel_staff.staff.advance(instr);
-            return false;
-        }
-        if (e.shiftKey === true)
-        {
-            // shift-enter is special
-            if (btn)
-              btn.onclick();
-            else
-              run_script(input_text_area, output_test_area);
-            return false;
-        }
-      }
-    }    
-  }
-  return true;
-}
-
-// Register script windows for things like shift-enter
-for (var i = 0; i < 10; ++i)
-{
-  setup_script_window('input'+i, 'output'+i, 'button_run'+i);
-  for (var j = 0; j < 10; ++j)
-  {
-    setup_script_window('input'+i+'.'+j, 'output'+i+'.'+j, 'button_run'+i+'.'+j);
-  }
-}
-
-var editor = null;
-
-
-
-panel_chart.widgets[0].scale = 0.5;
-panel_chart.widgets[0].autoMagScale = false;
-
-panel_staff.setPos(700, 500);
-panel_staff.setSize(500, 50);
-panel_staff.setVisible(false);
-
-panel_chart.setPos(700, 600);
-panel_chart.setSize(500, 344);
-panel_chart.setVisible(false);
-
-var webgl_blocks = new QCEngineWebGLBlockSet('webgl_canvas');
-//webgl_blocks.initialize();
-//webgl_block_test_main('webgl_canvas');
-
-
-//run_script1();
-
-
-activateStopwatch();
-</script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-36296554-1', 'auto');
-  ga('send', 'pageview');
-
-</script>
-
-
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_bitfield.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_reg.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_int.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_basicops.js"></script>
+
+
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_widgets.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_blockjob.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_staff.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_qcpop_utils.js"></script>
+
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_setup.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_scriptpanel.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_panel.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_photonic.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_test.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_webgl_block.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_mbc.js"></script>
+<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_aaronson_chp.js"></script>
 
 
 </body>
