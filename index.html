@@ -56,6 +56,9 @@
         font-family: Arial, Helvetica, sans-serif;
         font-weight: bold;
     }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
 </style>
 </head>
 <body>
@@ -65,6 +68,8 @@
 
 <!-- Editor info: https://ace.c9.io/#nav=embedding
  -->
+These are code samples for a book project.
+
 <div id="editor_frame_div">
     <div id="controls_div">
         <input type="button" id="btn_run" value="Run Program" onclick="handle_run_button();">
@@ -87,9 +92,6 @@
 <script src="./external/ace/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>    
     var editor = ace.edit("editor_div");
-// Add this for dark theme
-//    editor.setTheme("ace/theme/monokai");
-//    editor.setTheme("");
     editor.session.setMode("ace/mode/javascript");
 
 var editor_div = document.getElementById('editor_div');
@@ -101,6 +103,7 @@ var script_output_textarea = document.getElementById('script_output_textarea');
 function handle_run_button()
 {
     run_script();
+    show_state_vector();
 }
 
 function handle_checkboxes()
@@ -153,21 +156,22 @@ window.onload = function() {
 // preferred display size of various elements.
 // menu_name - The name which will show up in the visible menu
 // id        - The name of the textarea which contains the program. Also the url key to load it directly
-// circle_scale - The number of circles wide/high in the desired default display.
-// gate_scale   - The number of gates wide/high in the desired default display.
+// num_instructions - The number of columns in the gates diaplay.
+// num_circle_rows   - The number of rows in the circles display.
+// num_circle_cols   - The number of columns in the circles display.
 var sample_list = [
-    { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 38, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 15, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 13, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 11, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 16, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, circles_per_row: 16, circles_per_col: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 ];
 
 function make_sample_menu()
@@ -183,13 +187,52 @@ function make_sample_menu()
     }
     str += '</select>';
     example_choice_span.innerHTML = str;
+
+    try_to_get_program_from_url()
     example_menu_changed();
+}
+
+// get_url_param() is adapted from JeffreyCrofte's work here: https://www.creativejuiz.fr/blog/en/javascript-en/read-url-get-parameters-with-javascript
+function get_url_param(param) {
+  var vars = {};
+  window.location.href.replace( location.hash, '' ).replace( 
+    /[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+    function( m, key, value ) { // callback
+      vars[key] = value !== undefined ? value : '';
+    }
+  );
+  if (param) {
+    return vars[param] ? vars[param] : null;  
+  }
+  return vars;
+}
+
+function try_to_get_program_from_url()
+{
+  var program_id = get_url_param('p');
+  if (program_id)
+  {
+    for (i = 0; i < sample_list.length; ++i)
+    {
+      sample = sample_list[i];
+      if (program_id == sample.id)
+      {
+        menu = document.getElementById('example_choice_sel');
+        menu.value = program_id;
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 function example_menu_changed()
 {
     menu = document.getElementById('example_choice_sel');
     load_example(menu.value);
+    handle_run_button();
+    rewind_to_beginning();
+    clear_output();
 }
 
 function load_example(id)
@@ -218,28 +261,29 @@ function setup_script_panels(sample)
 {
     if (panel_staff)
     {
+        // console.log('div');
+        // console.log(panel_staff);
+        // console.log(panel_staff.div);
+        // panel_staff.div.style.scroll = 'both';
         qc_options.color_by_phase = false;
         qc_options.circle_scale = 0.5;
         qc.start();
         qc.enableAnimation();
-        qc.reset(sample.num_qubits);
-        qc.write(0);
-        qint.new(sample.num_qubits, 'reg');
-        // qc.nop();
-        // qc.nop();
-        // qc.nop();
+        // qc.reset(sample.num_qubits);
+        // qc.write(0);
+        // qint.new(sample.num_qubits, 'reg');
 
         var left = 400;
         var top = 250;
-        var gate_grid = 32;
+        var gate_grid = 20;
         var circle_grid = 64;
-        var gate_width = 80 + gate_grid * sample.num_instructions;
-        var gate_height = 50 + gate_grid * sample.num_qubits;
+        var gate_width = 100 + 20 + gate_grid * sample.num_instructions;
+        var gate_height = 80 + gate_grid * sample.num_qubits;
         panel_staff.setPos(left, top);
         panel_staff.setSize(gate_width, gate_height);
         top += gate_height + 32;
-        var circle_width = 20 + circle_grid * sample.circles_per_row;
-        var circle_height = 150 + circle_grid * sample.circles_per_col;
+        var circle_width = 20 + circle_grid * sample.num_circle_cols;
+        var circle_height = 150 + circle_grid * sample.num_circle_rows;
         panel_chart.setPos(left, top);
         panel_chart.setSize(circle_width, circle_height);
         panel_staff.setVisible(true);
@@ -269,39 +313,31 @@ function run_script()
     panel_staff.draw();
     panel_chart.draw();
 
-
-    if (0 && panel_staff)
-    {
-        left = 500;
-        top = 250;
-        panel_staff.setPos(left + 100, top + 32);
-        panel_chart.setPos(left + 600, top + 32);
-        panel_staff.setSize(500, 50);
-        panel_chart.setSize(500, 50);
-        panel_staff.setVisible(true);
-        panel_chart.setVisible(true);
-
-      if (0 && last_run_box != input_text_area)
-      {
-        var left = window.pageXOffset || document.documentElement.scrollLeft;      
-        var top  = window.pageYOffset || document.documentElement.scrollTop
-        panel_staff.setPos(left + 100, top + 32);
-        panel_chart.setPos(left + 600, top + 32);
-        last_run_box = input_text_area;
-      }
-
-//      panel_staff.setVisible(true);
-//      panel_staff.staff.fullSnapshot(); 
-
-//panel_staff.setPos(700, 500);
-//panel_staff.setSize(500, 50);
-//panel_staff.setVisible(true);
-
-//panel_chart.setPos(700, 600);
-//panel_chart.setSize(500, 144);
-//      panel_chart.setVisible(true);
-    }
     qc.enableAnimation();
+}
+
+function clear_output()
+{
+  script_output_textarea.value = '(output prints here)\n';
+}
+
+function rewind_to_beginning()
+{
+  console.log('instructions: ' + qc.qReg.staff.insertionStart);
+  qc.qReg.staff.rewind_insertion_to_start();
+}
+
+function show_state_vector()
+{
+  list = panel_chart.widgets;
+  for (var i = 0; i < list.length; ++i)
+  {
+    if (list[i].stateVector)
+    {
+      console.log(list[i]);
+      list[i].collapsed = false;
+    }
+  }
 }
 
 </script>
@@ -538,7 +574,6 @@ function estimate_num_spikes(spike, range)
 <script type="text/javascript" src="http://machinelevel.com/qc/qcengine_widgets.js"></script>
 <script type="text/javascript" src="http://machinelevel.com/qc/qcengine_blockjob.js"></script>
 <script type="text/javascript" src="http://machinelevel.com/qc/qcengine_staff.js"></script>
-<script type="text/javascript" src="http://machinelevel.com/qc/qcengine_qcpop_utils.js"></script>
 
 <script type="text/javascript" src="http://machinelevel.com/qc/qcengine_setup.js"></script>
 <script type="text/javascript" src="http://machinelevel.com/qc/qcengine_scriptpanel.js"></script>
