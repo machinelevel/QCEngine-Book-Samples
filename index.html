@@ -160,6 +160,8 @@ window.onload = function() {
 // num_circle_rows   - The number of rows in the circles display.
 // num_circle_cols   - The number of columns in the circles display.
 var sample_list = [
+    { menu_name: 'Ex 3.1: Logic 1', id: 'logic1', num_qubits: 3, num_instructions: 17, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+
     { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
     { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
 
@@ -341,6 +343,42 @@ function show_state_vector()
 }
 
 </script>
+
+<textarea id="logic1" style="display:none;">
+qc_options.color_by_phase = 1;
+qc_options.book_render = 1;
+qc.reset(3);
+var a = qint.new(1, 'a')
+var b = qint.new(1, 'b')
+var c = qint.new(1, 'c')
+
+qc.codeLabel('c = ~c');
+c.write(0);
+qc.nop();
+c.not();
+qc.nop();
+c.read();
+qc.codeLabel('');
+qc.nop();
+
+qc.codeLabel('if (b) then c = ~c');
+qc.write(2, 2|4);
+qc.nop();
+c.cnot(b);
+qc.nop();
+qc.read(2|4);
+qc.codeLabel('');
+qc.nop();
+
+qc.codeLabel('if (a and b) then c = ~c');
+qc.write(1|2);
+qc.nop();
+qc.cnot(4, 1|2);
+qc.nop();
+qc.read(1|2|4);
+qc.codeLabel('');
+qc.nop();
+</textarea>
 
 <textarea id="grover1" style="display:none;">
 var number_to_flip = 3;
