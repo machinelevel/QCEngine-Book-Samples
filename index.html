@@ -163,6 +163,8 @@ var sample_list = [
     { menu_name: 'Ex 3.1: Logic 1', id: 'logic1', num_qubits: 3, num_instructions: 17, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
     { menu_name: 'Ex 3.2: Logic 2', id: 'logic2', num_qubits: 4, num_instructions: 17, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 
+    { menu_name: 'Example: Phase Estimation 2',  id: 'phase2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+
     { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
     { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
 
@@ -635,6 +637,87 @@ function estimate_num_spikes(spike, range)
     return candidates;
 }
 </textarea>
+
+
+
+
+
+
+
+
+
+<textarea id="phase2" style="display:none;">
+// Run this sample at http://oreilly.machinelevel.com?p=phase2
+qc_options.color_by_phase = true;
+
+function main()
+{
+    //Specify the size of output register - determines precision of our answer
+    var m = 4;
+    // Specify the size of input register that will speicfy our eigenstate
+    var n = 1;
+    // Setup
+    qc.reset(m + n);
+    var qout = qint.new(m, 'output');
+    var qin = qint.new(n, 'input');
+    // Initialize output register all zeros
+    qout.write(0);
+    // Initialize input register as eigenstate of HAD
+    qin.write(0);
+    var eigenstate_to_test = 'a'; // a or b, from the book
+    if (eigenstate_to_test == 'a') {
+        qin.rotx(22.5);
+    }
+    else {
+        qin.rotx(22.5);
+        qin.phase(180);
+    }
+    // Define our conditional unitary
+    function cont_u(qcontrol, qtarget, control_count) {
+        // For Hadamard, we ony need to know if control_count is even or odd,
+        // as applying HAD an even number of times does nothing.
+        if (control_count & 1)
+            qtarget.chadamard(null, ~0, qcontrol.bits(control_count));
+    }
+    // Operate phase estimation primitive on registers
+    phase_est(qin, qout, cont_u);
+    // Read output register
+    qout.read()
+}
+
+
+var qft_flip = function(N, flipqint) {
+    for (i=0; i<=Math.floor(N/2)-1; i++) {
+        var val = 1<<i | 1<<(N-i-1);
+        qc.exchange(val);
+    }
+}
+
+function phase_est(q_in, q_out, cont_u) {
+    // Main phase estimation single run
+    // HAD the output register
+    q_out.had();
+    var out_res = q_out.numBits;
+    // Apply conditional powers of u
+    for (j = 0; j < out_res; j++)
+        cont_u(q_out, q_in, 1 << j);
+    // Inverse QFT on output register
+    // (Note qft backwards and doesn't include 
+    // exchanges in QCEngine at the moment)
+    qft_flip(out_res);
+    q_out.QFT();
+}
+
+
+main();
+</textarea>
+
+
+
+
+
+
+
 
 
 <script type="text/javascript" src="http://machinelevel.com/qc/qcengine_bitfield.js"></script>
