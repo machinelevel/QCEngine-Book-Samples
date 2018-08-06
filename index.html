@@ -6,7 +6,7 @@
     #editor_div { 
         position: absolute;
         display: block;
-        top: 32px;
+        top: 64px;
         right: 0;
         bottom: 10px;
         left: 0;
@@ -56,6 +56,9 @@
         font-family: Arial, Helvetica, sans-serif;
         font-weight: bold;
     }
+    input:disabled+label {
+      color: #aaa;
+    }
     body {
       font-family: Arial, Helvetica, sans-serif;
     }
@@ -72,13 +75,29 @@ These are code samples for a book project.
 
 <div id="editor_frame_div">
     <div id="controls_div">
+        <table>
+            <tr>
+                <td valign="bottom">
         <input type="button" id="btn_run" value="Run Program" onclick="handle_run_button();">
+                <br/>
         <input id="chk_theme" type="checkbox" onchange="handle_checkboxes();">
         <label for="chk_theme">Dark theme</label>
+                </td>
+                <td>
         <span id="example_choice_span">
             <select id="example_choice_sel">
             </select>
         </span>
+            </td>
+            <td>
+        <span id="language_choice_span">
+            <input type="radio" id="lang_js" name="sample_language" value="javascript" onchange="example_menu_changed();"><label for="lang_js">JavaScript (QCEngine)</label><br/>
+            <input type="radio" id="lang_py" name="sample_language" value="python" onchange="example_menu_changed();"><label for="lang_py">Python (QISKit)</label><br/>
+            <input type="radio" id="lang_asm" name="sample_language" value="asm" onchange="example_menu_changed();"><label for="lang_asm">QASM (IBM QE)</label>
+        </span>
+            </td>
+        </tr>
+    </table>
     </div>
     <div id="editor_div">
     </div>
@@ -97,13 +116,31 @@ These are code samples for a book project.
 var editor_div = document.getElementById('editor_div');
 var editor_frame_div = document.getElementById('editor_frame_div');
 var example_choice_span = document.getElementById('example_choice_span');
+var language_choice_span = document.getElementById('language_choice_span');
 var script_output_textarea = document.getElementById('script_output_textarea');
-
+var current_language = 'javascript';
+var button_js = document.getElementById('lang_js');
+var button_py = document.getElementById('lang_py');
+var button_asm = document.getElementById('lang_asm');
 
 function handle_run_button()
 {
-    run_script();
-    show_state_vector();
+    if (current_language != 'javascript')
+    {
+        var message;
+        if (current_language == 'python')
+            message = 'To run the Python QISKit examples, please install QISKit at https://qiskit.org and then paste the sample code into your local editor.';
+        if (current_language == 'asm')
+            message = 'To run the QASM examples, please visit the IBM Quantum Experience website at https://quantumexperience.ng.bluemix.net';
+        panel_staff.setVisible(false);
+        panel_chart.setVisible(false);
+        alert(message);
+    }
+    else
+    {
+        run_script();
+        show_state_vector();
+    }
 }
 
 function handle_checkboxes()
@@ -233,10 +270,28 @@ function try_to_get_program_from_url()
 
 function example_menu_changed()
 {
+    if (button_js.checked)
+        current_language = 'javascript';
+    if (button_py.checked)
+        current_language = 'python';
+    if (button_asm.checked)
+        current_language = 'asm';
     menu = document.getElementById('example_choice_sel');
     load_example(menu.value);
-    handle_run_button();
-    rewind_to_beginning();
+
+    editor.session.setMode("ace/mode/" + current_language);
+
+    if (current_language == 'javascript')
+    {
+        handle_run_button();
+        rewind_to_beginning();
+    }
+    else
+    {
+        panel_staff.setVisible(false);
+        panel_chart.setVisible(false);
+    }
+
     clear_output();
 }
 
@@ -247,7 +302,8 @@ function load_example(id)
         sample = sample_list[i];
         if (sample.id == id)
         {
-            source_area = document.getElementById(id);
+            var id_lang = setup_program_in_language(id);
+            source_area = document.getElementById(id_lang);
             if (source_area != null)
             {
                 editor.focus();
@@ -260,12 +316,48 @@ function load_example(id)
     }
 }
 
+function setup_program_in_language(id)
+{
+    var src_js = document.getElementById(id + '_javascript');
+    var src_py = document.getElementById(id + '_python');
+    var src_asm = document.getElementById(id + '_asm');
+    button_js.disabled = (src_js == null);
+    button_py.disabled = (src_py == null);
+    button_asm.disabled = (src_asm == null);
+    var id_lang = id + '_' + current_language;
+    source_area = document.getElementById(id_lang);
+    if (source_area == null)
+    {
+        // If the language isn't supported, switch to JavaScript
+        current_language = 'javascript'
+        id_lang = id + '_' + current_language;
+    }
+    set_current_language_checkbox();
+    return id_lang;
+}
+
+function set_current_language_checkbox()
+{
+    if (current_language == 'javascript')
+        button_js.checked = true;
+    if (current_language == 'python')
+        button_py.checked = true;
+    if (current_language == 'asm')
+        button_asm.checked = true;
+}
+
 function LoadUserName() {}
 
 function setup_script_panels(sample)
 {
     if (panel_staff)
     {
+        if (current_language != 'javascript')
+        {
+            panel_staff.setVisible(false);
+            panel_chart.setVisible(false);
+            return;
+        }
         // console.log('div');
         // console.log(panel_staff);
         // console.log(panel_staff.div);
@@ -328,6 +420,8 @@ function clear_output()
 
 function rewind_to_beginning()
 {
+  if (current_language != 'javascript')
+    return;
   console.log('instructions: ' + qc.qReg.staff.insertionStart);
   qc.qReg.staff.rewind_insertion_to_start();
 }
@@ -347,7 +441,7 @@ function show_state_vector()
 
 </script>
 
-<textarea id="logic1" style="display:none;">
+<textarea id="logic1_javascript" style="display:none;">
 qc_options.color_by_phase = 1;
 qc_options.book_render = 1;
 qc.reset(3);
@@ -383,7 +477,7 @@ qc.codeLabel('');
 qc.nop();
 </textarea>
 
-<textarea id="logic2" style="display:none;">
+<textarea id="logic2_javascript" style="display:none;">
 // Initialize
 num_qubits = 4;
 qc_options.color_by_phase = true;
@@ -416,7 +510,13 @@ qc.codeLabel('');
 qc.nop();
 </textarea>
 
-<textarea id="grover1" style="display:none;">
+<textarea id="logic2_python" style="display:none;">
+
+### Python version coming soon!
+
+</textarea>
+
+<textarea id="grover1_javascript" style="display:none;">
 var number_to_flip = 3;
 
 qc_options.color_by_phase = 1;
@@ -444,7 +544,7 @@ qc.codeLabel('');
 qc.nop();
 </textarea>
 
-<textarea id="grover2" style="display:none;">
+<textarea id="grover2_javascript" style="display:none;">
 var number_to_flip = 3;
 var number_of_iterations = 4;
 
@@ -484,7 +584,7 @@ for (var i = 0; i < number_of_iterations; ++i)
 }
 </textarea>
 
-<textarea id="qft1" style="display:none;">
+<textarea id="qft1_javascript" style="display:none;">
 qc_options.color_by_phase = 1;
 qc_options.book_render = 1;
 var num_qubits = 4;
@@ -510,7 +610,7 @@ signal.phase(90, 2);
 signal.phase(180, 4);
 </textarea>
 
-<textarea id="qft2" style="display:none;">
+<textarea id="qft2_javascript" style="display:none;">
 var num_qubits = 4;
 qc.reset(num_qubits);
 var signal = qint.new(num_qubits, 'signal')
@@ -526,7 +626,7 @@ signal.phase(180, 4);
 signal.QFT()
 </textarea>
 
-<textarea id="qft3" style="display:none;">
+<textarea id="qft3_javascript" style="display:none;">
 var num_qubits = 4;
 qc.reset(num_qubits);
 var signal = qint.new(num_qubits, 'signal')
@@ -540,7 +640,7 @@ signal.phase(180, wave_period);
 signal.QFT()
 </textarea>
 
-<textarea id="qft10" style="display:none;">
+<textarea id="qft10_javascript" style="display:none;">
 // Setup
 var num_qubits = 4;
 qc.reset(num_qubits);
@@ -553,7 +653,7 @@ qin.write(3);
 qin.invQFT()
 </textarea>
 
-<textarea id="qft11" style="display:none;">
+<textarea id="qft11_javascript" style="display:none;">
 // Setup
 var num_qubits = 4;
 qc.reset(num_qubits);
@@ -571,7 +671,7 @@ qin.not(2);
 qin.invQFT()
 </textarea>
 
-<textarea id="shor1" style="display:none;">
+<textarea id="shor1_javascript" style="display:none;">
 function shor_sample() {
     N = 35;             // The number we're factoring
     precision_bits = 4; // See the text for a description of this
@@ -595,7 +695,7 @@ function ShorLogic(N, repeat_period, coprime) {
 }
 </textarea>
 
-<textarea id="shor2" style="display:none;">
+<textarea id="shor2_javascript" style="display:none;">
 function ShorQPU_placeholder(N, precision_bits, coprime) {
     // Classical replacement for the quantum part of Shor
     work = 1;
@@ -609,7 +709,7 @@ function ShorQPU_placeholder(N, precision_bits, coprime) {
 }
 </textarea>
 
-<textarea id="shor7" style="display:none;">
+<textarea id="shor7_javascript" style="display:none;">
 function estimate_num_spikes(spike, range)
 {
     if (spike < range / 2)
@@ -643,10 +743,24 @@ function estimate_num_spikes(spike, range)
 
 
 
+<textarea id="phase1_javascript" style="display:none;">
+qc.reset(1);
 
+var reg = qint.new(1, 'reg');
 
+reg.write(0);
+reg.rotx(22.5);
+reg.had();
+reg.had();
 
-<textarea id="phase2" style="display:none;">
+reg.write(0);
+reg.rotx(22.5);
+reg.phase(180);
+reg.had();
+reg.had();
+</textarea>
+
+<textarea id="phase2_javascript" style="display:none;">
 // Run this sample at http://oreilly.machinelevel.com?p=phase2
 qc_options.color_by_phase = true;
 
@@ -693,14 +807,17 @@ var qft_flip = function(N, flipqint) {
     }
 }
 
-function phase_est(q_in, q_out, cont_u) {
+function phase_est(q_in, q_out, cont_u)
+{
     // Main phase estimation single run
     // HAD the output register
     q_out.had();
     var out_res = q_out.numBits;
+
     // Apply conditional powers of u
     for (j = 0; j < out_res; j++)
         cont_u(q_out, q_in, 1 << j);
+
     // Inverse QFT on output register
     // (Note qft backwards and doesn't include 
     // exchanges in QCEngine at the moment)
