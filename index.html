@@ -42,6 +42,22 @@
         width:200px;
         height:200px;
     }
+    #quantum_gates_div {
+        position: absolute;
+        display: block;
+        left:46%;
+        top:250px;
+        width:400px;
+        height:200px;
+    }
+    #quantum_state_div {
+        position: absolute;
+        display: block;
+        left:46%;
+        top:450px;
+        width:400px;
+        height:500px;
+    }
     #btn_run {
 /*
         background-color: #4CAF50;
@@ -102,9 +118,20 @@ These are code samples for a book project.
     <div id="editor_div">
     </div>
 </div>
+
+<div id="output_div">
 <textarea id="script_output_textarea" style="resize:both;">
 (program output goes here)
 </textarea>
+
+</div>
+
+<div id="quantum_gates_div">
+</div>
+
+<div id="quantum_state_div">
+</div>
+
 
 
 
@@ -189,32 +216,6 @@ window.onload = function() {
 
 <!-- ////////////////////////////////////////////////////////////////////// -->
 <script> 
-// This list contains an entry for each sample in this pager, aling with the
-// preferred display size of various elements.
-// menu_name - The name which will show up in the visible menu
-// id        - The name of the textarea which contains the program. Also the url key to load it directly
-// num_instructions - The number of columns in the gates diaplay.
-// num_circle_rows   - The number of rows in the circles display.
-// num_circle_cols   - The number of columns in the circles display.
-var sample_list = [
-    { menu_name: 'Ex 3.1: Logic 1', id: 'logic1', num_qubits: 3, num_instructions: 17, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 3.2: Logic 2', id: 'logic2', num_qubits: 4, num_instructions: 17, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-
-    { menu_name: 'Example: Phase Estimation 2',  id: 'phase2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-
-    { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
-
-    { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 15, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 13, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 11, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 16, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-
-    { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-];
 
 function make_sample_menu()
 {
@@ -279,7 +280,10 @@ function example_menu_changed()
     menu = document.getElementById('example_choice_sel');
     load_example(menu.value);
 
-    editor.session.setMode("ace/mode/" + current_language);
+    var editor_mode = "ace/mode/" + current_language;
+    if (current_language == 'asm')
+        editor_mode = '';
+    editor.session.setMode(editor_mode);
 
     if (current_language == 'javascript')
     {
@@ -358,6 +362,7 @@ function setup_script_panels(sample)
             panel_chart.setVisible(false);
             return;
         }
+        // panel_staff.div.parentNode.removeChild(panel_staff.div);
         // console.log('div');
         // console.log(panel_staff);
         // console.log(panel_staff.div);
@@ -370,8 +375,8 @@ function setup_script_panels(sample)
         // qc.write(0);
         // qint.new(sample.num_qubits, 'reg');
 
-        var left = 400;
-        var top = 250;
+        var left = 510;
+        var top = 260;
         var gate_grid = 20;
         var circle_grid = 64;
         var gate_width = 100 + 20 + gate_grid * sample.num_instructions;
@@ -436,10 +441,333 @@ function show_state_vector()
       console.log(list[i]);
       list[i].collapsed = false;
     }
+    else if (list[i].blochSphere || list[i].densityMatrix || list[i].graphState || list[i].stabilizerState)
+        list[i].in_use = false;
   }
 }
 
+                // list[index].in_use = true;
+                // list[index].drawQInt = qint;
+                // list[index].densityMatrix = false;
+                // list[index].fockState = false;
+                // list[index].stabilizerState = false;
+                // list[index].blochSphere = false;
+                // list[index].graphState = false;
+                // list[index].stateVector = false;
+                // list[index].collapsed = true;
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// This list contains an entry for each sample in this pager, aling with the
+// preferred display size of various elements.
+// menu_name - The name which will show up in the visible menu
+// id        - The name of the textarea which contains the program. Also the url key to load it directly
+// num_instructions - The number of columns in the gates diaplay.
+// num_circle_rows   - The number of rows in the circles display.
+// num_circle_cols   - The number of columns in the circles display.
+var sample_list = [
+    { menu_name: 'Ex 4.1: Teleport 1', id: 'teleport1', num_qubits: 3, num_instructions: 21, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Ex 3.1: Logic 1', id: 'logic1', num_qubits: 3, num_instructions: 17, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 3.2: Logic 2', id: 'logic2', num_qubits: 4, num_instructions: 17, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Example: Phase Estimation 2',  id: 'phase2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 15, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 13, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 11, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 16, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+
+    { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+];
+</script>
+
+
+
+<textarea id="teleport1_asm" style="display:none;">
+//     http://oreilly.machinelevel.com?p=teleport1
+
+include "qelib1.inc";
+qreg q[5];
+creg c[5];
+
+// Step 1: Create an entangled pair
+h q[2];
+cx q[2],q[4];
+barrier q[0],q[1],q[2],q[3],q[4];
+
+// Step 2: Prepare a payload
+x q[0];
+h q[0];
+t q[0];
+barrier q[0],q[1],q[2],q[3],q[4];
+
+// Step 3: Send
+h q[0];
+h q[2];
+cx q[2],q[0];
+h q[2];
+measure q[0] -> c[0];
+measure q[2] -> c[2];
+barrier q[3],q[4];
+
+// Step 4: Receive
+x q[4];
+z q[4];
+barrier q[3],q[4];
+
+// Step 5: Verify
+tdg q[4];
+h q[4];
+x q[4];
+measure q[4] -> c[4];
+</textarea>
+
+<textarea id="teleport1_javascript" style="display:none;">
+//     http://oreilly.machinelevel.com?p=teleport1
+
+qc.reset(3);
+var alice = qint.new(1, 'alice');
+var ep    = qint.new(1, 'ep');
+var bob   = qint.new(1, 'bob');
+
+qc.write(0, 2|4);
+qc.codeLabel('entangle');
+ep.had();
+bob.cnot(ep);
+qc.codeLabel('');
+
+alice.write(0);
+qc.codeLabel('prep payload');
+alice.had();
+alice.phase(45);
+alice.had();
+qc.codeLabel('');
+qc.nop();
+qc.print('alice prob:' + alice.peekProbability(1));
+qc.codeLabel('send');
+ep.cnot(alice);
+alice.had();
+alice.read();
+ep.read();
+qc.codeLabel('');
+qc.nop();
+
+qc.codeLabel('receive');
+var bob_is_asleep = true;
+if (bob_is_asleep) {
+    bob.not();
+    bob.phase(180);
+} else {
+    bob.cnot(ep);
+    bob.cz(alice);
+}
+qc.codeLabel('');
+qc.nop();
+
+qc.codeLabel('verify');
+bob.had();
+bob.phase(-45);
+bob.had();
+bob.read();
+qc.codeLabel('');
+qc.nop();
+</textarea>
+
+
+
+<textarea id="teleport1_python" style="display:none;">
+
+import qiskit
+import math
+
+def sample_teleport1():
+    # Set up the program
+    alice = QuantumRegister(1, name='alice')
+    ep    = QuantumRegister(1, name='ep')
+    bob   = QuantumRegister(1, name='bob')
+    alice_c = ClassicalRegister(1, name='alicec')
+    ep_c    = ClassicalRegister(1, name='epc')
+    bob_c   = ClassicalRegister(1, name='bobc')
+    qc = QuantumCircuit(alice, ep, bob, alice_c, ep_c, bob_c)
+
+    # entangle
+    qc.h(ep)
+    qc.cx(ep, bob)
+    qc.barrier()
+
+    # prep payload
+    qc.reset(alice)
+    qc.h(alice)
+    qc.rz(math.radians(45), alice)
+    qc.h(alice)
+    qc.barrier()
+
+    # send
+    qc.cx(alice, ep)
+    qc.h(alice)
+    qc.measure(alice, alice_c)
+    qc.measure(ep, ep_c)
+    qc.barrier()
+
+    # receive
+    qc.x(bob).c_if(ep_c, 1)
+    qc.z(bob).c_if(alice_c, 1)
+
+    #verify
+    qc.h(bob)
+    qc.rz(math.radians(-45), bob)
+    qc.h(bob)
+    qc.measure(bob, bob_c)
+
+    # Run the program!
+    qis = QiskitHandler(qiskit_backend='local_qasm_simulator')
+    qis.execute(qc, shots=100)
+    qis.display(qc)
+
+
+
+
+
+##################################################################################
+## Below is boilerplate code for activating and running QISKit in all samples.
+
+"""
+Local simulators:
+    local_qasm_simulator:        Currently does not support shots=1
+    local_statevector_simulator: Currently does not support measure or reset
+    local_unitary_simulator:     Currently does not draw the circuit diagram
+"""
+
+import getpass, time
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
+from qiskit import available_backends, execute, register, least_busy, load_qasm_string
+from qiskit.tools.visualization import plot_histogram, circuit_drawer
+
+class QiskitHandler:
+    def __init__(self, qiskit_backend=None, use_actual_hardware=False, run_locally=True, ibm_qe_api_token=None):
+        self.ibm_qe_api_token = ibm_qe_api_token
+        self.use_actual_hardware = use_actual_hardware
+        self.run_locally = run_locally
+        self.qiskit_backend = qiskit_backend
+        self.setup()
+
+    def setup(self):
+        need_token = self.use_actual_hardware or not self.run_locally
+        if need_token:
+            if self.ibm_qe_api_token is None:
+                self.ibm_qe_api_token = getpass.getpass('Please input your token and hit enter: ')
+            self.qx_config = {
+                'APItoken': self.ibm_qe_api_token,
+                'url':'https://quantumexperience.ng.bluemix.net/api'}
+            try:
+                print('registering API token...')
+                register(self.qx_config['APItoken'], self.qx_config['url'])
+
+                print('\nYou have access to great power!')
+                print(available_backends({'local': False, 'simulator': False}))
+            except: 
+                print('Something went wrong.\nDid you enter a correct token?')
+                exit()
+
+        # If no backend is requested, find the least busy one
+        if self.qiskit_backend is None:
+            self.qiskit_backend = least_busy(available_backends({'simulator': (not self.use_actual_hardware), 'local': self.run_locally}))
+
+        print('available_backends: {}'.format(available_backends()))
+        print('Using simulator backend: ' + self.qiskit_backend)
+
+    def execute(self, circuit, shots=1, max_credits=3):
+        self.job_exp = execute(circuit, backend=self.qiskit_backend, shots=shots, max_credits=max_credits)
+        lapse = 0
+        interval = 30
+        while not self.job_exp.done:
+            print('Status @ {} seconds'.format(interval * lapse))
+            print(self.job_exp.status)
+            time.sleep(interval)
+            lapse += 1
+        print(self.job_exp.status)
+
+    def display(self, circuit):
+        if self.qiskit_backend != 'local_unitary_simulator':
+            print('drawing circuit...')
+            circuit_drawer(circuit)
+            print('drawing histogram...,')
+            print('   (close graph windows to proceed)')
+            plot_histogram(self.job_exp.result().get_counts(circuit))
+
+
+if __name__ == '__main__':
+    sample_teleport1()
+
+</textarea>
+
+
+
+
+
+
+
+
+
+
 
 <textarea id="logic1_javascript" style="display:none;">
 qc_options.color_by_phase = 1;
@@ -802,7 +1130,7 @@ function main()
 
 var qft_flip = function(N, flipqint) {
     for (i=0; i<=Math.floor(N/2)-1; i++) {
-        var val = 1<<i | 1<<(N-i-1);
+        var val = (1 << i) | (1 << (N-i-1));
         qc.exchange(val);
     }
 }
@@ -828,6 +1156,67 @@ function phase_est(q_in, q_out, cont_u)
 
 main();
 </textarea>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
