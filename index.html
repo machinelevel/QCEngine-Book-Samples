@@ -517,25 +517,25 @@ function show_state_vector()
 // num_circle_rows   - The number of rows in the circles display.
 // num_circle_cols   - The number of columns in the circles display.
 var sample_list = [
-    { menu_name: 'Ex 4.1: Teleport 1', id: 'teleport1', num_qubits: 3, num_instructions: 21, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 4.1: Teleport 1', id: 'teleport1', num_qubits: 3, num_instructions: 21, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Ex 3.1: Logic 1', id: 'logic1', num_qubits: 3, num_instructions: 17, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 3.2: Logic 2', id: 'logic2', num_qubits: 4, num_instructions: 17, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 3.1: Logic 1', id: 'logic1', num_qubits: 3, num_instructions: 17, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 3.2: Logic 2', id: 'logic2', num_qubits: 4, num_instructions: 17, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Example: Phase Estimation 2',  id: 'phase2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Example: Phase Estimation 2',  id: 'phase2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 6.1: Grover 1', id: 'grover1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 6.2: Grover 2', id: 'grover2', num_qubits: 4, num_instructions: 39, num_circle_cols: 4, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 15, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 13, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 11, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 16, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 7.1: QFT 1',    id: 'qft1', num_qubits: 4, num_instructions: 12, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 7.2: QFT 2',    id: 'qft2', num_qubits: 4, num_instructions: 15, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 7.3: QFT 3',    id: 'qft3', num_qubits: 4, num_instructions: 13, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 7.10: QFT 10',  id: 'qft10', num_qubits: 4, num_instructions: 11, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 7.11: QFT 11',  id: 'qft11', num_qubits: 4, num_instructions: 16, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 
-    { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
-    { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 14.1: Shor 1',  id: 'shor1', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 14.2: Shor 2',  id: 'shor2', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
+    // { menu_name: 'Ex 14.7: Shor 7',  id: 'shor7', num_qubits: 4, num_instructions: 14, num_circle_cols: 16, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0},
 ];
 </script>
 
@@ -546,7 +546,7 @@ var sample_list = [
 <!--      CH02 one qubit        -->
 <!--      CH02 one qubit        -->
 <script>
-sample_list.push({ menu_name: 'Ex 2-1: Random bit', id: 'ex_1qubit_1randombit', num_qubits: 1, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+sample_list.push({ menu_name: 'Ex 2-1: Random bit', id: 'ex_1qubit_1randombit', num_qubits: 1, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_1qubit_1randombit_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_1randombit
@@ -559,7 +559,7 @@ var result = qc.read();  // read the result as a digital bit
 </textarea>
 
 <script>
-sample_list.push({ menu_name: 'Ex 2-2: 8 Random bits', id: 'ex_1qubit_random_qubyte', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+sample_list.push({ menu_name: 'Ex 2-2: 8 Random bits', id: 'ex_1qubit_random_qubyte', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_1qubit_random_qubyte_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_random_qubyte
@@ -574,7 +574,7 @@ qc.print(result);
 
 
 <script>
-sample_list.push({ menu_name: 'Ex 2-3: Root-of-not', id: 'ex_1qubit_rootofnot', num_qubits: 1, num_instructions: 9, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+sample_list.push({ menu_name: 'Ex 2-3: Root-of-not', id: 'ex_1qubit_rootofnot', num_qubits: 1, num_instructions: 9, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_1qubit_rootofnot_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_rootofnot
@@ -596,7 +596,7 @@ qc.had();
 
 
 <script>
-sample_list.push({ menu_name: 'Ex 2-4: Quantum Spy Hunter', id: 'ex_1qubit_spy', num_qubits: 3, num_instructions: 35, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+sample_list.push({ menu_name: 'Ex 2-4: Quantum Spy Hunter', id: 'ex_1qubit_spy', num_qubits: 3, num_instructions: 35, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_1qubit_spy_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_spy
@@ -703,7 +703,10 @@ if (send_basis == recv_basis)
 <!--      CH03 multiple qubits        -->
 <!--      CH03 multiple qubits        -->
 
-<textarea id="ch_2qubit_EX_seperable" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 3-1: Separable qubits', id: 'ch_2qubit_EX_seperable', num_qubits: 3, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ch_2qubit_EX_seperable_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ch_2qubit_EX_seperable
 
 qc.reset(3);
@@ -716,7 +719,10 @@ qubit3.had();
 
 </textarea>
 
-<textarea id="ch_2qubit_EX1" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 3-2: Entangled qubits', id: 'ch_2qubit_EX1', num_qubits: 2, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ch_2qubit_EX1_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ch_2qubit_EX1
 
 qc.reset(2);
@@ -732,7 +738,10 @@ qc.print(b_result);
 
 </textarea>
 
-<textarea id="ch_2qubit_remote_random" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 3-3: Remote-controlled randomness', id: 'ch_2qubit_remote_random', num_qubits: 2, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ch_2qubit_remote_random_javascript" style="display:none;">
 // Run this sample online:
 //  http://oreilly.machinelevel.com?p=ch_2qubit_remote_random
 
@@ -795,6 +804,9 @@ qc.print(b_result + '\n');
 
 
 
+<script>
+sample_list.push({ menu_name: 'Ex 4-1: Basic teleportation', id: 'teleport1', num_qubits: 3, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
 <textarea id="teleport1_javascript" style="display:none;">
 //     http://oreilly.machinelevel.com?p=teleport1
 
@@ -1020,7 +1032,10 @@ if __name__ == '__main__':
 -->
 
 
-<textarea id="teleportfly" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 4-2: A fly in the teleporter', id: 'teleportfly', num_qubits: 24, num_instructions: 60, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="teleportfly_javascript" style="display:none;">
 //    http://oreilly.machinelevel.com?p=teleportfly
 
 ///////////////////////////////////////////////////
@@ -1220,7 +1235,10 @@ main();
 <!--      CH05 logic       -->
 <!--      CH05 logic       -->
 
-<textarea id="logic2" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-1: Increment and decrement', id: 'logic2', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="logic2_javascript" style="display:none;">
 // Run this sample online:
 //    http://oreilly.machinelevel.com?p=logic2
 
@@ -1241,7 +1259,10 @@ a.add(1);
 a.subtract(1);
 </textarea>
 
-<textarea id="ex_ch_logic3" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-2: Adding two quantum integers', id: 'ex_ch_logic3', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_ch_logic3_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic3
 
 // a += b
@@ -1249,7 +1270,10 @@ a.add(b);
 
 </textarea>
 
-<textarea id="ex_ch_logic_4" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-3: Add-squared', id: 'ex_ch_logic_4', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_ch_logic_4_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic_4
 
 // a += b * b
@@ -1257,7 +1281,10 @@ a.addSquared(b);
 
 </textarea>
 
-<textarea id="ex_ch_logic5" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-4: Quantum conditional execution', id: 'ex_ch_logic5', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_ch_logic5_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic5
 
 // if a < 3 then b += 1
@@ -1267,7 +1294,10 @@ a.add(3);
 
 </textarea>
 
-<textarea id="ex_ch_logic6" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-5: Quantum conditional phase flip', id: 'ex_ch_logic6', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_ch_logic6_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic6
 
 //Flip the phase if +a+ is less than 3 and +b+ is equal to 1
@@ -1286,7 +1316,10 @@ a.add(3);
 <!--      CH06 amplitude amplification       -->
 <!--      CH06 amplitude amplification       -->
 
-<textarea id="grover_ex_grover2" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-1: Gr0ver iterations', id: 'grover_ex_grover2', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="grover_ex_grover2_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=grover_ex_grover2
 
 var number_to_flip = 3;
@@ -1313,7 +1346,10 @@ for (var i = 0; i < number_of_iterations; ++i)
 
 </textarea>
 
-<textarea id="grover_ex_grover6" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 5-2: Grover frequencies', id: 'grover_ex_grover6', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="grover_ex_grover6_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=grover_ex_grover6
 
 var n2f = [0,1,2];             // Which terms to flip
@@ -1356,7 +1392,10 @@ for (var i = 0; i < number_of_iterations; ++i)
 <!--      CH07 QFT       -->
 <!--      CH07 QFT       -->
 
-<textarea id="qft_sample_abc" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 7-1: QFT to distinguish 3 states', id: 'qft_sample_abc', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qft_sample_abc_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qft_sample_abc
 
 var num_qubits = 4;
@@ -1381,7 +1420,10 @@ if (which_signal == 'A') {
 signal.QFT()
 </textarea>
 
-<textarea id="qft_spiral_phase" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 7-2: QFT Spiral phase', id: 'qft_spiral_phase', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qft_spiral_phase_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qft_spiral_phase
 
 var num_qubits = 4;
@@ -1399,7 +1441,10 @@ signal.phase(180, 4);
 signal.QFT()
 </textarea>
 
-<textarea id="qft_sample_code_1" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 7-3: QFT wave period', id: 'qft_sample_code_1', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qft_sample_code_1_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qft_sample_code_1
 
 var num_qubits = 4;
@@ -1415,7 +1460,10 @@ signal.phase(180, wave_period);
 signal.QFT()
 </textarea>
 
-<textarea id="qft_freq_to_state" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 7-4: QFT Frequency to state', id: 'qft_freq_to_state', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qft_freq_to_state_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qft_freq_to_state
 
 // Setup
@@ -1430,7 +1478,10 @@ qin.write(3);
 qin.invQFT()
 </textarea>
 
-<textarea id="qft_example_10" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 7-5: QFT multipe frequencies', id: 'qft_example_10', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qft_example_10_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qft_example_10
 
 // Setup
@@ -1457,11 +1508,17 @@ qin.invQFT()
 <!--      CH08 phase estimation       -->
 <!--      CH08 phase estimation       -->
 
-<textarea id="phase1" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 8-1: Phase estimation', id: 'phase1', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="phase1_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=phase1
 </textarea>
 
-<textarea id="phase2" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 8-2: Phase estimation 2', id: 'phase2', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="phase2_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=phase2
 
 //Specify the size of output register - determines precision of our answer
@@ -1486,13 +1543,32 @@ function cont_u(qcontrol, qtarget, control_count) {
     if (control_count & 1)
         qtarget.chadamard(null, ~0, qcontrol.bits(control_count));
 }
+
+
+function phase_est(q_in, q_out, cont_u)
+{
+    // Main phase estimation single run
+    // HAD the output register
+    q_out.had();
+
+    // Apply conditional powers of u
+    for (j = 0; j < q_out.numBits; j++)
+        cont_u(q_out, q_in, 1 << j);
+
+    // Inverse QFT on output register
+    q_out.invQFT();
+}
+
 // Operate phase estimation primitive on registers
 phase_est(qin, qout, cont_u);
 // Read output register
 qout.read()
 </textarea>
 
-<textarea id="phase3" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 8-3: Phase estimation 3', id: 'phase3', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="phase3_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=phase3
 
 function phase_est(q_in, q_out, cont_u)
@@ -1553,7 +1629,10 @@ function phase_est(q_in, q_out, cont_u)
 <!--      CH11 real data       -->
 <!--      CH11 real data       -->
 
-<textarea id="ex_qram1" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 11-1: QRAM', id: 'ex_qram1', num_qubits: 3, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_qram1_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_qram1
 
 var a = [4, 3, 5, 1];
@@ -1607,8 +1686,15 @@ qc.print(a);
 <!--      CH13 supersampling       -->
 <!--      CH13 supersampling       -->
 
-<textarea id="ex_qss1a" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 13-1: Basic phase graphics 1', id: 'ex_qss1a', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_qss1a_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_qss1a
+
+qc.reset(8);
+qx = qint.new(4, 'qx');
+qy = qint.new(4, 'qy');
 
 // Clear the canvas
 qc.write(0);
@@ -1624,8 +1710,15 @@ qc.phase(180, qy.bits(0x8, qx.bits(0x8|0x1)));
 qx.cnot(qy, 0x1);
 </textarea>
 
-<textarea id="ex_qss2" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 13-2: Basic phase graphics 2', id: 'ex_qss2', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="ex_qss2_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_qss2
+
+qc.reset(8);
+qx = qint.new(4, 'qx');
+qy = qint.new(4, 'qy');
 
 // Horizontal Line at qy=3
 qy.not(~3);
@@ -1643,8 +1736,19 @@ qc.phase(180, qx.bits());
 qx.subtract(qy);
 </textarea>
 
-<textarea id="qss3" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 13-3: Basic phase graphics 3', id: 'qss3', num_qubits: 16, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qss3_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qss3
+
+qc.reset(16);
+qx = qint.new(4, 'qx');
+qy = qint.new(4, 'qy');
+qacc = qint.new(8, 'qacc');
+
+var tx = 2;
+var ty = 3;
 
 // Hz Line y=3
 qacc.cnot(qy)
@@ -1665,20 +1769,26 @@ qacc.subtract(tx * 4);
 qacc.cnot(qx);
 </textarea>
 
-<textarea id="qss4" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 13-4: Supersampling 4', id: 'qss4', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qss4_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qss4
 </textarea>
 
-<textarea id="qss5" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 13-5: Supersampling 5', id: 'qss5', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="qss5_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qss5
 </textarea>
 
 
 
-<!--      CH04 machine learning       -->
-<!--      CH04 machine learning       -->
-<!--      CH04 machine learning       -->
-<!--      CH04 machine learning       -->
+<!--      CH14 machine learning       -->
+<!--      CH14 machine learning       -->
+<!--      CH14 machine learning       -->
+<!--      CH14 machine learning       -->
 
 <textarea id="xxxxx" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
@@ -1702,13 +1812,16 @@ qacc.cnot(qx);
 
 
 
-<!--      CH04 shor       -->
-<!--      CH04 shor       -->
-<!--      CH04 shor       -->
-<!--      CH04 shor       -->
+<!--      CH15 shor       -->
+<!--      CH15 shor       -->
+<!--      CH15 shor       -->
+<!--      CH15 shor       -->
 
 
-<textarea id="shor_EX1" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 15-1: Shor\'s Factroring Algorithm', id: 'shor_EX1', num_qubits: 12, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="shor_EX1_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=shor_EX1
 
 function shor_sample() {
@@ -1731,9 +1844,13 @@ function ShorLogic(N, repeat_period, coprime) {
     factor1 = gcd(N, ar2 - 1);
     factor2 = gcd(N, ar2 + 1);
     return [factor1, factor2];
+}
 </textarea>
 
-<textarea id="shor_shor2" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 15-2: Shor without a QPU', id: 'shor_shor2', num_qubits: 12, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="shor_shor2_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=shor_shor2
 
 function ShorNoQPU(N, precision_bits, coprime) {
@@ -1749,7 +1866,10 @@ function ShorNoQPU(N, precision_bits, coprime) {
 }
 </textarea>
 
-<textarea id="shor_estimate_spike_number" style="display:none;">
+<script>
+sample_list.push({ menu_name: 'Ex 15-3: Shor classical followup', id: 'shor_estimate_spike_number', num_qubits: 12, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+</script>
+<textarea id="shor_estimate_spike_number_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
 
 function estimate_num_spikes(spike, range)
@@ -1817,7 +1937,7 @@ function estimate_num_spikes(spike, range)
 
 
 
-<textarea id="logic1_javascript" style="display:none;">
+<textarea id="logic1_javascript_javascript" style="display:none;">
 qc_options.color_by_phase = 1;
 qc_options.book_render = 1;
 qc.reset(3);
@@ -1853,7 +1973,7 @@ qc.codeLabel('');
 qc.nop();
 </textarea>
 
-<textarea id="logic2_javascript" style="display:none;">
+<textarea id="logic2_javascript_javascript" style="display:none;">
 // Initialize
 num_qubits = 4;
 qc_options.color_by_phase = true;
@@ -1886,7 +2006,7 @@ qc.codeLabel('');
 qc.nop();
 </textarea>
 
-<textarea id="logic2_python" style="display:none;">
+<textarea id="logic2_python_javascript" style="display:none;">
 
 ### Python version coming soon!
 
