@@ -541,44 +541,259 @@ var sample_list = [
 
 
 
-<textarea id="teleport1_asm" style="display:none;">
-//     http://oreilly.machinelevel.com?p=teleport1
+<!--      CH02 one qubit        -->
+<!--      CH02 one qubit        -->
+<!--      CH02 one qubit        -->
+<!--      CH02 one qubit        -->
+<script>
+sample_list.push({ menu_name: 'Ex 2-1: Random bit', id: 'ex_1qubit_1randombit', num_qubits: 1, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+</script>
+<textarea id="ex_1qubit_1randombit_javascript" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_1randombit
 
-include "qelib1.inc";
-qreg q[5];
-creg c[5];
+qc.reset(1);         // allocate one qubit
+qc.write(0);         // write the value zero
+qc.had();            // place it into superposition of 0 and 1
+var result = qc.read();  // read the result as a digital bit
 
-// Step 1: Create an entangled pair
-h q[2];
-cx q[2],q[4];
-barrier q[0],q[1],q[2],q[3],q[4];
-
-// Step 2: Prepare a payload
-x q[0];
-h q[0];
-t q[0];
-barrier q[0],q[1],q[2],q[3],q[4];
-
-// Step 3: Send
-h q[0];
-h q[2];
-cx q[2],q[0];
-h q[2];
-measure q[0] -> c[0];
-measure q[2] -> c[2];
-barrier q[3],q[4];
-
-// Step 4: Receive
-x q[4];
-z q[4];
-barrier q[3],q[4];
-
-// Step 5: Verify
-tdg q[4];
-h q[4];
-x q[4];
-measure q[4] -> c[4];
 </textarea>
+
+<script>
+sample_list.push({ menu_name: 'Ex 2-2: 8 Random bits', id: 'ex_1qubit_random_qubyte', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+</script>
+<textarea id="ex_1qubit_random_qubyte_javascript" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_random_qubyte
+
+qc.reset(8);
+qc.write(0);
+qc.had();
+result = qc.read();
+qc.print(result);
+
+</textarea>
+
+
+<script>
+sample_list.push({ menu_name: 'Ex 2-3: Root-of-not', id: 'ex_1qubit_rootofnot', num_qubits: 1, num_instructions: 9, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+</script>
+<textarea id="ex_1qubit_rootofnot_javascript" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_rootofnot
+
+qc.reset(1);
+qc.write(0);
+qc.codeLabel("RNOT")
+qc.had();
+qc.phase(90);
+qc.had();
+qc.codeLabel();
+qc.nop()
+qc.codeLabel("RNOT")
+qc.had();
+qc.phase(90);
+qc.had();
+
+</textarea>
+
+
+<script>
+sample_list.push({ menu_name: 'Ex 2-4: Quantum Spy Hunter', id: 'ex_1qubit_spy', num_qubits: 3, num_instructions: 35, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0})
+</script>
+<textarea id="ex_1qubit_spy_javascript" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_spy
+
+
+qc.reset(3);
+qc.discard();
+a = qint.new(1, 'alice');
+fiber = qint.new(1, 'fiber');
+b = qint.new(1, 'bob');
+
+function random_bit(q) {
+    q.write(0);
+    q.had();
+    return q.read();
+}
+
+// Generate two random bits
+qc.codeLabel('get two random bits');
+send_basis = random_bit(a);
+send_val = random_bit(a);
+qc.codeLabel('');
+
+// Prepare Alice's qubit
+//a.write(send_val);
+a.write(0);
+qc.codeLabel('set value');
+qc.nop();
+//if (send_value)
+    a.not();
+qc.nop();
+qc.codeLabel('');
+qc.codeLabel('set basis');
+qc.nop();
+//if (send_basis)
+    a.had();
+qc.nop();
+qc.codeLabel('');
+
+// set value and basis using only phase
+if (0) {
+a.had();
+qc.codeLabel('set phase to control value and basis');
+a.phase(180 * send_val + 90 * send_basis);
+qc.codeLabel('');
+a.had();
+a.phase(90);
+}
+
+// Send the qubit!
+fiber.exchange(a);
+
+// Activate the spy
+var spy_is_present = true;
+if (spy_is_present) {
+    var spy_basis = 1;
+    qc.nop();
+    qc.codeLabel('spy');
+    if (spy_basis)
+        fiber.had();
+    stolen_data = fiber.read();
+    fiber.write(0);
+//    if (stolen_data)
+        fiber.not();
+    if (spy_basis)
+        fiber.had();
+    qc.codeLabel('');
+    qc.nop();
+}
+
+// Receive the qubit!
+recv_basis = random_bit(b);
+fiber.exchange(b);
+qc.codeLabel('set basis');
+qc.nop();
+//if (recv_basis)
+    b.had();
+qc.nop();
+qc.codeLabel('');
+qc.codeLabel('read value');
+qc.nop();
+recv_val = b.read();
+qc.nop();
+qc.codeLabel('');
+qc.nop();
+
+// Now Alice emails Bob to tell
+// him her basis and value.
+// If the basis matches and the
+// value does not, there's a spy!
+if (send_basis == recv_basis)
+    if (send_val != recv_val)
+        qc.print('Caught a spy!\n');
+
+
+</textarea>
+
+
+
+
+
+<!--      CH03 multiple qubits        -->
+<!--      CH03 multiple qubits        -->
+<!--      CH03 multiple qubits        -->
+<!--      CH03 multiple qubits        -->
+
+<textarea id="ch_2qubit_EX_seperable" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ch_2qubit_EX_seperable
+
+qc.reset(3);
+qc.write(0);
+var qubit1 = qint.new(1, 'qubit 1');
+var qubit2 = qint.new(1, 'qubit 2');
+var qubit3 = qint.new(1, 'qubit 3');
+qubit2.had();
+qubit3.had();
+
+</textarea>
+
+<textarea id="ch_2qubit_EX1" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ch_2qubit_EX1
+
+qc.reset(2);
+a = qint.new(1, 'a');
+b = qint.new(1, 'b');
+qc.write(0);
+a.had();           // Place into superposition
+b.cnot(a);         // Entangle
+a_result = a.read();
+b_result = b.read();
+qc.print(a_result);
+qc.print(b_result);
+
+</textarea>
+
+<textarea id="ch_2qubit_remote_random" style="display:none;">
+// Run this sample online:
+//  http://oreilly.machinelevel.com?p=ch_2qubit_remote_random
+
+qc.reset(2);
+a = qint.new(1, 'a');
+b = qint.new(1, 'b');
+qc.write(0);
+a.had();
+// now prob of a is 50%
+b.had();
+b.phase(45);
+b.had();
+// now prob of b is 15%
+b.cnot(a);
+// Now, you can read *either*
+// qubit and get 50% prob.
+// If the result is 0, then
+// the prob of the *remaining*
+// qubit is 15%, else it's 85%
+a_result = a.read();
+b_result = b.read();
+qc.print(a_result + ' ');
+qc.print(b_result + '\n');
+
+</textarea>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--      CH04 teleport       -->
+<!--      CH04 teleport       -->
+<!--      CH04 teleport       -->
+<!--      CH04 teleport       -->
+
+
+
 
 <textarea id="teleport1_javascript" style="display:none;">
 //     http://oreilly.machinelevel.com?p=teleport1
@@ -632,6 +847,46 @@ qc.nop();
 </textarea>
 
 
+<textarea id="teleport1_asm" style="display:none;">
+//     http://oreilly.machinelevel.com?p=teleport1
+
+include "qelib1.inc";
+qreg q[5];
+creg c[5];
+
+// Step 1: Create an entangled pair
+h q[2];
+cx q[2],q[4];
+barrier q[0],q[1],q[2],q[3],q[4];
+
+// Step 2: Prepare a payload
+x q[0];
+h q[0];
+t q[0];
+barrier q[0],q[1],q[2],q[3],q[4];
+
+// Step 3: Send
+h q[0];
+h q[2];
+cx q[2],q[0];
+h q[2];
+measure q[0] -> c[0];
+measure q[2] -> c[2];
+barrier q[3],q[4];
+
+// Step 4: Receive
+x q[4];
+z q[4];
+barrier q[3],q[4];
+
+// Step 5: Verify
+tdg q[4];
+h q[4];
+x q[4];
+measure q[4] -> c[4];
+</textarea>
+
+
 
 <textarea id="teleport1_python" style="display:none;">
 
@@ -671,7 +926,7 @@ def sample_teleport1():
     qc.x(bob).c_if(ep_c, 1)
     qc.z(bob).c_if(alice_c, 1)
 
-    #verify
+    # verify
     qc.h(bob)
     qc.rz(math.radians(-45), bob)
     qc.h(bob)
@@ -758,6 +1013,799 @@ if __name__ == '__main__':
     sample_teleport1()
 
 </textarea>
+
+<!--
+    TODO QCEngine features to add:
+    Single-bit phase!!! For the receive_payload func
+-->
+
+
+<textarea id="teleportfly" style="display:none;">
+//    http://oreilly.machinelevel.com?p=teleportfly
+
+///////////////////////////////////////////////////
+// Fly in the Teleporter
+//
+// This is a fun and horrifying example from the
+// teleportation chapter.
+
+qc_options.color_by_phase = true;
+
+// This is the left half of the pixels of the fly,
+// encoded as an 8x16 array:
+
+var image = [ '........',
+              '...X....',
+              '....X.XX',
+              '.....XXX',
+              '....XXXX',
+              'XX...XXX',
+              '..XXX.XX',
+              '...X....',
+              '..X...XX',
+              '.X...XXX',
+              'X....XXX',
+              'X..XXXXX',
+              '.XXX.XXX',
+              '...X..XX',
+              '..X.....',
+              '........'];
+
+// This is the classic teleport example, but with an interesting
+// payload, and some controllable error.
+function main()
+{
+    var teleport_error = 0.0   // <--- change this number to 0.1 or more
+    var do_teleport = true; // Enables the teleporter
+
+    qc.reset(24);
+    var fly = qint.new(8, 'fly');
+    var epair1 = qint.new(8, 'epair1');
+    var epair2 = qint.new(8, 'epair2');
+
+    prepare_fly(fly);
+    if (do_teleport)
+    {
+        entangle_pair(epair1, epair2);
+        var digital_bits = send_payload(fly, epair1);
+        
+        apply_error(epair2, teleport_error);
+        
+        receive_payload(epair2, digital_bits);
+        cleanup_view(fly, epair1, epair2);
+    }
+}
+
+function entangle_pair(ep1, ep2)
+{
+    qc.codeLabel('entangle pair');
+
+    // Create all the entangled qubits we need to teleport this object.    
+    ep1.write(0);
+    ep2.write(0);
+    ep1.hadamard();
+    ep2.cnot(ep1);
+
+    qc.codeLabel('');
+    qc.nop();
+}
+
+var last_not = 0;
+
+function prepare_fly(fly)
+{
+    qc.codeLabel('encode fly');
+
+    // Encode the fly pixels into relative phases in a
+    // quantum superposition
+    fly.write(0);
+    fly.hadamard();
+    for (var y = 0; y < image.length; ++y)
+    {
+        for (var x = 0; x < image[0].length; ++x)
+        {
+            if (image[y][x] == 'X')
+                pixel(fly, x + 0, y);
+        }
+    }
+    fly.not(last_not);
+    qc.cnot(fly.bits(0x7), fly.bits(0x8));
+    fly.Grover();
+
+    // At this point, reading the "fly" register would be very likely
+    // to return the coordinates of one of the pixels in the fly.
+    qc.codeLabel('');
+    qc.nop();
+}
+
+function pixel(obj, x, y)
+{
+    // Given x and y, flip the phase of one term
+    // Note: last_not is used to avoid redundant NOT gates
+    var val = ~((y << 4) | x);
+    obj.not(val ^ last_not);
+    last_not = val;
+    obj.phase(180, ~0x8);
+}
+
+function send_payload(payload, ep)
+{
+    qc.codeLabel('send payload');
+
+    // Entangle the payload with half of the e-pair, and then vaporize it!
+    ep.cnot(payload);
+    payload.hadamard();
+    var digital_bits = [payload.read(), ep.read()];
+
+    qc.codeLabel('');
+    qc.nop();
+    return digital_bits;
+}
+
+function apply_error(qubits, error_severity)
+{
+    qc.codeLabel('apply error');
+
+    // Apply some unpredictable noise to the system
+    qc.noise(error_severity, qubits.bits());
+
+    qc.codeLabel('');
+    qc.nop();
+}
+
+function receive_payload(ep, digital_bits)
+{
+    qc.codeLabel('receive payload');
+
+    // Teleport receiver applies the correct operations based on
+    // the digital data. Note that in this example we *could*
+    // use postselection, but would only succeed once every 65,536
+    // tries, on average.
+    ep.not(digital_bits[1]);
+    for (var bit = 1; bit <= digital_bits[0]; bit <<= 1)
+    {
+        if (bit & digital_bits[0])
+            ep.phase(180, bit);
+    }
+    qc.codeLabel('');
+    qc.nop();
+}
+
+function cleanup_view(fly, epair1, epair2)
+{
+    // Here, we make the resulting fly show up nicely in our state vector display.
+    fly.exchange(epair2);
+    epair1.write(0);
+    epair2.write(0);
+    epair1.discard();
+    epair2.discard();
+    qc.nop();
+    show_state_vector();
+}
+
+function show_state_vector()
+{
+  list = panel_chart.widgets;
+  for (var i = 0; i < list.length; ++i)
+  {
+    if (list[i].stateVector)
+    {
+      console.log(list[i]);
+      list[i].collapsed = false;
+    }
+    else if (list[i].blochSphere || list[i].densityMatrix || list[i].graphState || list[i].stabilizerState)
+        list[i].in_use = false;
+  }
+}
+
+main();
+
+
+
+
+</textarea>
+
+
+
+
+
+
+
+
+
+
+
+<!--      CH05 logic       -->
+<!--      CH05 logic       -->
+<!--      CH05 logic       -->
+<!--      CH05 logic       -->
+
+<textarea id="logic2" style="display:none;">
+// Run this sample online:
+//    http://oreilly.machinelevel.com?p=logic2
+
+// Initialize
+num_qubits = 4;
+qc.reset(num_qubits);
+a = qint.new(num_qubits, 'a');
+
+// prepare
+a.write(1);
+a.hadamard(0x4);
+a.phase(45, 0x4);
+
+// increment
+a.add(1);
+
+// decrement
+a.subtract(1);
+</textarea>
+
+<textarea id="ex_ch_logic3" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic3
+
+// a += b
+a.add(b);
+
+</textarea>
+
+<textarea id="ex_ch_logic_4" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic_4
+
+// a += b * b
+a.addSquared(b);
+
+</textarea>
+
+<textarea id="ex_ch_logic5" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic5
+
+// if a < 3 then b += 1
+a.subtract(3);
+b.add(1, a.bits(0x4));
+a.add(3);
+
+</textarea>
+
+<textarea id="ex_ch_logic6" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic6
+
+//Flip the phase if +a+ is less than 3 and +b+ is equal to 1
+a.subtract(3);
+b.not(~1);
+qc.phase(180, a.bits(0x4, b.bits(~0)));
+b.not(~1);
+a.add(3);
+
+</textarea>
+
+
+
+<!--      CH06 amplitude amplification       -->
+<!--      CH06 amplitude amplification       -->
+<!--      CH06 amplitude amplification       -->
+<!--      CH06 amplitude amplification       -->
+
+<textarea id="grover_ex_grover2" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=grover_ex_grover2
+
+var number_to_flip = 3;
+var number_of_iterations = 4;
+
+var num_qubits = 4;
+qc.reset(num_qubits);
+var reg = qint.new(num_qubits, 'reg')
+reg.write(0);
+reg.hadamard();
+
+for (var i = 0; i < number_of_iterations; ++i)
+{
+    // Flip the marked value
+    reg.not(~number_to_flip);
+    reg.phase(180);
+    reg.not(~number_to_flip);
+
+    reg.Grover();
+
+    // Peek at the probability
+    prob = reg.peekProbability(number_to_flip);
+}
+
+</textarea>
+
+<textarea id="grover_ex_grover6" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=grover_ex_grover6
+
+var n2f = [0,1,2];             // Which terms to flip
+var number_of_iterations = 50; // The number of Grover iterations
+
+var num_qubits = 4;
+qc.reset(num_qubits);
+var reg = qint.new(num_qubits, 'reg')
+reg.write(0);
+reg.hadamard();
+
+for (var i = 0; i < number_of_iterations; ++i)
+{
+    // Flip the marked value
+    for (var j = 0; j < n2f.length; ++j)
+    {
+        var marked_term = n2f[j];
+        reg.not(~marked_term);
+        reg.phase(180);
+        reg.not(~marked_term);
+    }
+
+    reg.Grover();
+
+    prob = 0;
+    for (var j = 0; j < n2f.length; ++j)
+    {
+        var marked_term = n2f[j];
+        prob += reg.peekProbability(marked_term);
+    }
+    qc.print('iters: '+i+' prob: '+prob);
+}
+</textarea>
+
+
+
+
+<!--      CH07 QFT       -->
+<!--      CH07 QFT       -->
+<!--      CH07 QFT       -->
+<!--      CH07 QFT       -->
+
+<textarea id="qft_sample_abc" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qft_sample_abc
+
+var num_qubits = 4;
+qc.reset(num_qubits);
+var signal = qint.new(num_qubits, 'signal')
+var which_signal = 'A';
+
+// prepare the signal
+signal.write(0);
+signal.hadamard();
+if (which_signal == 'A') {
+    signal.phase(180, 1);
+} else if (which_signal == 'A') {
+    signal.phase(90, 1);
+    signal.phase(180, 2);
+} else if (which_signal == 'C') {
+    signal.phase(45, 1);
+    signal.phase(90, 2);
+    signal.phase(180, 4);
+}
+
+signal.QFT()
+</textarea>
+
+<textarea id="qft_spiral_phase" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qft_spiral_phase
+
+var num_qubits = 4;
+qc.reset(num_qubits);
+var signal = qint.new(num_qubits, 'signal')
+
+// prepare the signal
+signal.write(0);
+signal.hadamard();
+signal.phase(45, 1);
+signal.phase(90, 2);
+signal.phase(180, 4);
+
+// Run the QFT
+signal.QFT()
+</textarea>
+
+<textarea id="qft_sample_code_1" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qft_sample_code_1
+
+var num_qubits = 4;
+qc.reset(num_qubits);
+var signal = qint.new(num_qubits, 'signal')
+var wave_period = 2; // A:1 B:2 C:4 D:8
+
+// prepare the signal
+signal.write(0);
+signal.hadamard();
+signal.phase(180, wave_period);
+
+signal.QFT()
+</textarea>
+
+<textarea id="qft_freq_to_state" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qft_freq_to_state
+
+// Setup
+var num_qubits = 4;
+qc.reset(num_qubits);
+var qin = qint.new(num_qubits, 'qin');
+
+// Write the frequency we want to register
+qin.write(3);
+
+// Inverse QFT to turn into a signal
+qin.invQFT()
+</textarea>
+
+<textarea id="qft_example_10" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qft_example_10
+
+// Setup
+var num_qubits = 4;
+qc.reset(num_qubits);
+var qin = qint.new(num_qubits, 'qin');
+qin.write(0);
+
+// Write the frequencies we want to register
+qin.had(1);
+qc.cnot(14,1);
+qin.not(2);
+qc.cnot(1,2);
+qin.not(2);
+
+//Inverse QFT to turn into a signal
+qin.invQFT()
+</textarea>
+
+
+
+<!--      CH08 phase estimation       -->
+<!--      CH08 phase estimation       -->
+<!--      CH08 phase estimation       -->
+<!--      CH08 phase estimation       -->
+
+<textarea id="phase1" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=phase1
+</textarea>
+
+<textarea id="phase2" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=phase2
+
+//Specify the size of output register - determines precision of our answer
+var m = 4;
+// Specify the size of input register that will speicfy our eigenstate
+var n = 1;
+// Setup
+qc.reset(m + n);
+var qout = qint.new(m, 'output');
+var qin = qint.new(n, 'input');
+// Initialize output register all zeros
+qout.write(0);
+// Initialize input register as eigenstate of HAD
+qin.write(0);
+qin.rotx(22.5);
+qin.phase(180);
+
+// Define our conditional unitary
+function cont_u(qcontrol, qtarget, control_count) {
+    // For Hadamard, we ony need to know if control_count is even or odd,
+    // as applying HAD an even number of times does nothing.
+    if (control_count & 1)
+        qtarget.chadamard(null, ~0, qcontrol.bits(control_count));
+}
+// Operate phase estimation primitive on registers
+phase_est(qin, qout, cont_u);
+// Read output register
+qout.read()
+</textarea>
+
+<textarea id="phase3" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=phase3
+
+function phase_est(q_in, q_out, cont_u)
+{
+    // Main phase estimation single run
+    // HAD the output register
+    q_out.had();
+
+    // Apply conditional powers of u
+    for (j = 0; j < q_out.numBits; j++)
+        cont_u(q_out, q_in, 1 << j);
+
+    // Inverse QFT on output register
+    q_out.invQFT();
+}
+</textarea>
+
+
+
+<!--      CH09 linear equations       -->
+<!--      CH09 linear equations       -->
+<!--      CH09 linear equations       -->
+<!--      CH09 linear equations       -->
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+
+
+<!--      CH10 smell of an app       -->
+<!--      CH10 smell of an app       -->
+<!--      CH10 smell of an app       -->
+<!--      CH10 smell of an app       -->
+
+
+
+
+
+<!--      CH11 real data       -->
+<!--      CH11 real data       -->
+<!--      CH11 real data       -->
+<!--      CH11 real data       -->
+
+<textarea id="ex_qram1" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_qram1
+
+var a = [4, 3, 5, 1];
+
+qc.reset(3);
+var qreg = qint.new(3, 'qreg');
+
+function increment(index)
+{
+    qreg.write(a[index]);
+    qreg.add(1);
+    a[index] = qreg.read();
+}
+
+qc.print(a);
+increment(2);
+qc.print(a);
+</textarea>
+
+
+
+<!--      CH12 database search       -->
+<!--      CH12 database search       -->
+<!--      CH12 database search       -->
+<!--      CH12 database search       -->
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+
+
+<!--      CH13 supersampling       -->
+<!--      CH13 supersampling       -->
+<!--      CH13 supersampling       -->
+<!--      CH13 supersampling       -->
+
+<textarea id="ex_qss1a" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_qss1a
+
+// Clear the canvas
+qc.write(0);
+qx.hadamard();
+qy.hadamard();
+
+// Invert if qx >= 8
+qc.phase(180, qx.bits(0x8));
+
+// 50% gray in the corner
+qx.cnot(qy, 0x1);
+qc.phase(180, qy.bits(0x8, qx.bits(0x8|0x1)));
+qx.cnot(qy, 0x1);
+</textarea>
+
+<textarea id="ex_qss2" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=ex_qss2
+
+// Horizontal Line at qy=3
+qy.not(~3);
+qc.phase(180, qy.bits());
+qy.not(~3);
+
+// Vertical Line at qx=10
+qx.not(~10);
+qc.phase(180, qx.bits());
+qx.not(~10);
+
+// Diagonal Line at qy=-(qx+1)
+qx.add(qy);
+qc.phase(180, qx.bits());
+qx.subtract(qy);
+</textarea>
+
+<textarea id="qss3" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qss3
+
+// Hz Line y=3
+qacc.cnot(qy)
+qacc.add(ty * 4);
+qacc.not(~3);
+qc.phase(180, qacc.bits());
+qacc.not(~3);
+qacc.subtract(ty * 4);
+qacc.cnot(qy);
+
+// Vt Line x=10
+qacc.cnot(qx)
+qacc.add(tx * 4);
+qacc.not(~10);
+qc.phase(180, qacc.bits());
+qacc.not(~10);
+qacc.subtract(tx * 4);
+qacc.cnot(qx);
+</textarea>
+
+<textarea id="qss4" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qss4
+</textarea>
+
+<textarea id="qss5" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=qss5
+</textarea>
+
+
+
+<!--      CH04 machine learning       -->
+<!--      CH04 machine learning       -->
+<!--      CH04 machine learning       -->
+<!--      CH04 machine learning       -->
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+<textarea id="xxxxx" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+</textarea>
+
+
+
+<!--      CH04 shor       -->
+<!--      CH04 shor       -->
+<!--      CH04 shor       -->
+<!--      CH04 shor       -->
+
+
+<textarea id="shor_EX1" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=shor_EX1
+
+function shor_sample() {
+    N = 35;             // The number we're factoring
+    precision_bits = 4; // See the text for a description
+    coprime = 2;        // must be 2 in this QPU implementation
+
+    result = Shor(N, precision_bits, coprime);
+}
+
+function Shor(N, precision_bits, coprime) {
+    repeat_period = ShorQPU(N, precision_bits, coprime); // quantum part
+    factors = ShorLogic(N, repeat_period, coprime);      // classical part
+    return factors;
+}
+
+function ShorLogic(N, repeat_period, coprime) {
+    // Given the repeat period, find the actual factors
+    ar2 = Math.pow(coprime, repeat_period / 2.0);
+    factor1 = gcd(N, ar2 - 1);
+    factor2 = gcd(N, ar2 + 1);
+    return [factor1, factor2];
+</textarea>
+
+<textarea id="shor_shor2" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=shor_shor2
+
+function ShorNoQPU(N, precision_bits, coprime) {
+    // Classical replacement for the quantum part of Shor
+    work = 1;
+    max_loops = Math.pow(2, precision_bits);
+    for (iter = 0; iter < max_loops; ++iter) {
+        work = (work * coprime) % N;
+        if (work == 1) // found the repeat
+            return iter + 1;
+    }
+    return 0;
+}
+</textarea>
+
+<textarea id="shor_estimate_spike_number" style="display:none;">
+// Run this sample online: http://oreilly.machinelevel.com?p=xxxxx
+
+function estimate_num_spikes(spike, range)
+{
+    if (spike < range / 2)
+        spike = range - spike;
+    best_error = 1.0;
+    e0 = 0, e1 = 0, e2 = 0;
+    actual = spike / range;
+    candidates = []
+    for (denom = 1.0; denom < spike; ++denom)
+    {
+        numerator = Math.round(denom * actual);
+        estimated = numerator / denom;
+        error = Math.abs(estimated - actual);
+        e0 = e1;
+        e1 = e2;
+        e2 = error;
+        // Look for a local minimum which beats our current best error
+        if (e1 <= best_error && e1 < e0 && e1 < e2)
+        {
+            repeat_period = denom - 1;
+            candidates.push(denom - 1);
+            best_error = e1;
+        }
+    }
+    return candidates;
+}
+</textarea>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
