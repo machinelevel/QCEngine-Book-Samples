@@ -551,6 +551,8 @@ sample_list.push({ menu_name: 'Ex 2-1: Random bit', id: 'ex_1qubit_1randombit', 
 <textarea id="ex_1qubit_1randombit_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_1randombit
 
+// This sample generates a single random bit.
+
 qc.reset(1);         // allocate one qubit
 qc.write(0);         // write the value zero
 qc.had();            // place it into superposition of 0 and 1
@@ -564,20 +566,29 @@ sample_list.push({ menu_name: 'Ex 2-2: 8 Random bits', id: 'ex_1qubit_random_qub
 <textarea id="ex_1qubit_random_qubyte_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_random_qubyte
 
-qc.reset(8);
-qc.write(0);
-qc.had();
-result = qc.read();
-qc.print(result);
+// This sample generates a single random byte,
+// using eight unentangled qubits.
+
+qc.reset(8);         // allocate some qubits
+qc.write(0);         // write the value zero
+qc.had();            // place them all into superposition of 0 and 1
+var result = qc.read();
+qc.print('result: ' + result + '\n');
 
 </textarea>
 
 
 <script>
-sample_list.push({ menu_name: 'Ex 2-3: Root-of-not', id: 'ex_1qubit_rootofnot', num_qubits: 1, num_instructions: 9, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 2-3: Root-of-not', id: 'ex_1qubit_rootofnot', num_qubits: 1, num_instructions: 13, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_1qubit_rootofnot_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_1qubit_rootofnot
+
+// This sample demonstrates construction of a ROOTNOT operation
+// using HAD and PHASE operations.
+// It also demonstrates the built-in ROOTNOT operator to show
+// that it has the same effect. Note that applying ROOTNOT twice
+// is the equivalent of a single NOT operator.
 
 qc.reset(1);
 qc.write(0);
@@ -591,6 +602,14 @@ qc.codeLabel("RNOT")
 qc.had();
 qc.phase(90);
 qc.had();
+qc.codeLabel("")
+
+qc.nop()
+qc.codeLabel("Built-in RNOT")
+qc.rootnot();
+qc.nop()
+qc.rootnot();
+qc.codeLabel()
 
 </textarea>
 
@@ -617,34 +636,24 @@ function random_bit(q) {
 // Generate two random bits
 qc.codeLabel('get two random bits');
 send_basis = random_bit(a);
-send_val = random_bit(a);
+send_value = random_bit(a);
 qc.codeLabel('');
 
 // Prepare Alice's qubit
-//a.write(send_val);
 a.write(0);
 qc.codeLabel('set value');
 qc.nop();
-//if (send_value)
+if (send_value)
     a.not();
 qc.nop();
 qc.codeLabel('');
+qc.nop();
 qc.codeLabel('set basis');
 qc.nop();
-//if (send_basis)
+if (send_basis)
     a.had();
 qc.nop();
 qc.codeLabel('');
-
-// set value and basis using only phase
-if (0) {
-a.had();
-qc.codeLabel('set phase to control value and basis');
-a.phase(180 * send_val + 90 * send_basis);
-qc.codeLabel('');
-a.had();
-a.phase(90);
-}
 
 // Send the qubit!
 fiber.exchange(a);
@@ -659,7 +668,7 @@ if (spy_is_present) {
         fiber.had();
     stolen_data = fiber.read();
     fiber.write(0);
-//    if (stolen_data)
+    if (stolen_data)
         fiber.not();
     if (spy_basis)
         fiber.had();
@@ -672,10 +681,11 @@ recv_basis = random_bit(b);
 fiber.exchange(b);
 qc.codeLabel('set basis');
 qc.nop();
-//if (recv_basis)
+if (recv_basis)
     b.had();
 qc.nop();
 qc.codeLabel('');
+qc.nop();
 qc.codeLabel('read value');
 qc.nop();
 recv_val = b.read();
@@ -688,7 +698,7 @@ qc.nop();
 // If the basis matches and the
 // value does not, there's a spy!
 if (send_basis == recv_basis)
-    if (send_val != recv_val)
+    if (send_value != recv_val)
         qc.print('Caught a spy!\n');
 
 
@@ -729,17 +739,23 @@ qc.reset(2);
 a = qint.new(1, 'a');
 b = qint.new(1, 'b');
 qc.write(0);
+qc.nop();
+
+qc.codeLabel('entangle');
 a.had();           // Place into superposition
 b.cnot(a);         // Entangle
-a_result = a.read();
-b_result = b.read();
+qc.codeLabel();
+
+qc.nop();
+a_result = a.read();  // The two bits will be random,
+b_result = b.read();  // but always the same.
 qc.print(a_result);
 qc.print(b_result);
 
 </textarea>
 
 <script>
-sample_list.push({ menu_name: 'Ex 3-3: Remote-controlled randomness', id: 'ch_2qubit_remote_random', num_qubits: 2, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 3-3: Remote-controlled randomness', id: 'ch_2qubit_remote_random', num_qubits: 2, num_instructions: 8, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ch_2qubit_remote_random_javascript" style="display:none;">
 // Run this sample online:
@@ -805,7 +821,7 @@ qc.print(b_result + '\n');
 
 
 <script>
-sample_list.push({ menu_name: 'Ex 4-1: Basic teleportation', id: 'teleport1', num_qubits: 3, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 4-1: Basic teleportation', id: 'teleport1', num_qubits: 3, num_instructions: 24, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="teleport1_javascript" style="display:none;">
 //     http://oreilly.machinelevel.com?p=teleport1
@@ -838,7 +854,7 @@ qc.codeLabel('');
 qc.nop();
 
 qc.codeLabel('receive');
-var bob_is_asleep = true;
+var bob_is_asleep = false;
 if (bob_is_asleep) {
     bob.not();
     bob.phase(180);
@@ -1236,76 +1252,188 @@ main();
 <!--      CH05 logic       -->
 
 <script>
-sample_list.push({ menu_name: 'Ex 5-1: Increment and decrement', id: 'logic2', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 5-1: Increment and decrement', id: 'logic2', num_qubits: 4, num_instructions: 18, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="logic2_javascript" style="display:none;">
 // Run this sample online:
 //    http://oreilly.machinelevel.com?p=logic2
 
-// Initialize
+// This sample demonstrates increment and decrement of
+// integers in superposition.
+
 num_qubits = 4;
 qc.reset(num_qubits);
 a = qint.new(num_qubits, 'a');
 
 // prepare
+qc.codeLabel('prepare')
 a.write(1);
 a.hadamard(0x4);
 a.phase(45, 0x4);
+qc.nop();
 
+qc.codeLabel('')
+qc.nop();
+qc.codeLabel('increment')
 // increment
 a.add(1);
 
+qc.codeLabel('')
+qc.nop();
+qc.codeLabel('decrement')
 // decrement
 a.subtract(1);
+
+qc.codeLabel('')
+qc.nop();
 </textarea>
 
 <script>
-sample_list.push({ menu_name: 'Ex 5-2: Adding two quantum integers', id: 'ex_ch_logic3', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 5-2: Adding two quantum integers', id: 'ex_ch_logic3', num_qubits: 8, num_instructions: 20, num_circle_cols: 8, num_circle_rows: 8, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_ch_logic3_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic3
 
+// Initialize
+num_qubits = 6;
+qc.reset(num_qubits);
+a = qint.new(4, 'a');
+b = qint.new(2, 'b');
+
+// prepare
+qc.codeLabel('prepare');
+a.write(1);
+a.hadamard(0x4);
+a.phase(45, 0x4);
+b.write(1);
+b.hadamard(0x2);
+b.phase(90, 0x2);
+qc.nop();
+qc.codeLabel('');
+qc.nop();
+
 // a += b
+qc.codeLabel('a += b');
 a.add(b);
+qc.codeLabel('');
+qc.nop();
 
 </textarea>
 
 <script>
-sample_list.push({ menu_name: 'Ex 5-3: Add-squared', id: 'ex_ch_logic_4', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 5-3: Add-squared', id: 'ex_ch_logic_4', num_qubits: 8, num_instructions: 26, num_circle_cols: 8, num_circle_rows: 8, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_ch_logic_4_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic_4
 
+// Initialize
+num_qubits = 6;
+qc.reset(num_qubits);
+a = qint.new(4, 'a');
+b = qint.new(2, 'b');
+// prepare
+qc.codeLabel('prepare');
+a.write(1);
+a.hadamard(0x4);
+a.phase(45, 0x4);
+b.write(1);
+b.hadamard(0x2);
+b.phase(90, 0x2);
+qc.nop();
+qc.codeLabel('');
+qc.nop();
+
+qc.codeLabel('a += b');
+
 // a += b * b
 a.addSquared(b);
+
+qc.codeLabel('');
+qc.nop();
+
 
 </textarea>
 
 <script>
-sample_list.push({ menu_name: 'Ex 5-4: Quantum conditional execution', id: 'ex_ch_logic5', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 5-4: Quantum conditional execution', id: 'ex_ch_logic5', num_qubits: 8, num_instructions: 26, num_circle_cols: 8, num_circle_rows: 8, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_ch_logic5_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic5
 
+// In this sample, b will be incremented, but ONLY
+// for terms where a is less than 3
+
+// Initialize
+num_qubits = 6;
+qc.reset(num_qubits);
+a = qint.new(3, 'a');
+b = qint.new(3, 'b');
+
+// prepare
+qc.codeLabel('a = (1, 5)');
+a.write(1);
+a.hadamard(0x4);
+qc.codeLabel('');
+qc.nop();
+qc.codeLabel('b = (1, 3)');
+b.write(1);
+b.hadamard(0x2);
+b.phase(45, 0x2);
+qc.codeLabel('');
+qc.nop();
+
 // if a < 3 then b += 1
+qc.codeLabel('a -= 3');
 a.subtract(3);
+qc.codeLabel('');
+qc.nop();
+qc.codeLabel('if (a < 0) then b++');
 b.add(1, a.bits(0x4));
+qc.codeLabel('');
+qc.nop();
+qc.codeLabel('a += 3');
 a.add(3);
 
 </textarea>
 
 <script>
-sample_list.push({ menu_name: 'Ex 5-5: Quantum conditional phase flip', id: 'ex_ch_logic6', num_qubits: 8, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 5-5: Quantum conditional phase flip', id: 'ex_ch_logic6', num_qubits: 8, num_instructions: 26, num_circle_cols: 8, num_circle_rows: 4, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="ex_ch_logic6_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=ex_ch_logic6
 
+// Initialize
+qc_options.color_by_phase = true;
+num_qubits = 5;
+qc.reset(num_qubits);
+a = qint.new(3, 'a');
+b = qint.new(2, 'b');
+// prepare
+qc.codeLabel('a = 0,1,2,3');
+a.write(0);
+a.hadamard(0x1|0x2);
+qc.codeLabel('');
+qc.nop();
+qc.codeLabel('b = 1,3');
+b.write(1);
+b.hadamard(0x2);
+qc.codeLabel('');
+qc.nop();
+
 //Flip the phase if +a+ is less than 3 and +b+ is equal to 1
+qc.codeLabel('a -= 3        ');
 a.subtract(3);
+qc.codeLabel('');
+qc.nop();
+qc.codeLabel('flip if (a < 0 && b==1)');
 b.not(~1);
 qc.phase(180, a.bits(0x4, b.bits(~0)));
 b.not(~1);
+qc.codeLabel('');
+qc.nop();
+qc.codeLabel('        a += 3');
 a.add(3);
+qc.codeLabel('');
 
 </textarea>
 
@@ -1317,7 +1445,7 @@ a.add(3);
 <!--      CH06 amplitude amplification       -->
 
 <script>
-sample_list.push({ menu_name: 'Ex 5-1: Gr0ver iterations', id: 'grover_ex_grover2', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 5-1: Grover iterations', id: 'grover_ex_grover2', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="grover_ex_grover2_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=grover_ex_grover2
@@ -1393,10 +1521,12 @@ for (var i = 0; i < number_of_iterations; ++i)
 <!--      CH07 QFT       -->
 
 <script>
-sample_list.push({ menu_name: 'Ex 7-1: QFT to distinguish 3 states', id: 'qft_sample_abc', num_qubits: 4, num_instructions: 6, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
+sample_list.push({ menu_name: 'Ex 7-1: QFT to distinguish 3 states', id: 'qft_sample_abc', num_qubits: 4, num_instructions: 16, num_circle_cols: 8, num_circle_rows: 1, circle_scale: 1.0, gate_scale: 1.0});
 </script>
 <textarea id="qft_sample_abc_javascript" style="display:none;">
 // Run this sample online: http://oreilly.machinelevel.com?p=qft_sample_abc
+qc_options.color_by_phase = true;
+qc_options.book_render = true;
 
 var num_qubits = 4;
 qc.reset(num_qubits);
@@ -1404,6 +1534,7 @@ var signal = qint.new(num_qubits, 'signal')
 var which_signal = 'A';
 
 // prepare the signal
+qc.codeLabel('prepare');
 signal.write(0);
 signal.hadamard();
 if (which_signal == 'A') {
@@ -1416,8 +1547,14 @@ if (which_signal == 'A') {
     signal.phase(90, 2);
     signal.phase(180, 4);
 }
+qc.codeLabel();
+qc.nop();
 
-signal.QFT()
+qc.codeLabel('QFT');
+signal.invQFT();
+qc.codeLabel();
+qc.nop();
+
 </textarea>
 
 <script>
